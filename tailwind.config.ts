@@ -43,6 +43,10 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          mint: "hsl(var(--accent-mint))",
+          amber: "hsl(var(--accent-amber))",
+          sky: "hsl(var(--accent-sky))",
+          rose: "hsl(var(--accent-rose))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -66,23 +70,29 @@ export default {
           DEFAULT: "hsl(var(--gold))",
           light: "hsl(var(--gold-light))",
         },
-        teal: {
-          dark: "hsl(var(--teal-dark))",
-          light: "hsl(var(--teal-light))",
+        sage: {
+          DEFAULT: "hsl(var(--sage))",
+          warm: "hsl(var(--sage-warm))",
         },
-        cream: "hsl(var(--cream))",
-        sage: "hsl(var(--sage))",
+        emerald: {
+          dark: "hsl(var(--emerald-dark))",
+          light: "hsl(var(--emerald-light))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
       },
       boxShadow: {
         sm: "var(--shadow-sm)",
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
-        glow: "var(--shadow-glow)",
+        xl: "var(--shadow-xl)",
+        card: "var(--shadow-card)",
+        "card-hover": "var(--shadow-card-hover)",
       },
       keyframes: {
         "accordion-down": {
@@ -101,27 +111,22 @@ export default {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
+        "scale-in": {
+          from: { opacity: "0", transform: "scale(0.95)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
         float: {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
-        },
-        shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-up": "fade-up 0.6s ease-out forwards",
-        "fade-in": "fade-in 0.5s ease-out forwards",
+        "fade-up": "fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "fade-in": "fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "scale-in": "scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         float: "float 3s ease-in-out infinite",
-        shimmer: "shimmer 2s linear infinite",
-      },
-      backgroundImage: {
-        "gradient-primary": "var(--gradient-primary)",
-        "gradient-gold": "var(--gradient-gold)",
-        "gradient-hero": "var(--gradient-hero)",
       },
     },
   },

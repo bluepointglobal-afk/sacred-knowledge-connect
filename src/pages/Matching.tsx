@@ -257,7 +257,7 @@ const Matching = () => {
                           / {teacher.recommendedBundle.sessions} sessions
                         </span>
                       </div>
-                      <Button size="sm" variant="gold" className="w-full">
+                      <Button size="sm" variant="secondary" className="w-full">
                         View Bundle
                       </Button>
                     </div>

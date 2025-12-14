@@ -1,135 +1,126 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Check, Sparkles, BookOpen, Users } from "lucide-react";
-
-const learningGoals = [
-  "Memorize Quran",
-  "Perfect Tajweed",
-  "Understand Hadith",
-  "Explore Spirituality",
-];
+import { Zap, Star } from "lucide-react";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-hero py-20 lg:py-28">
-      {/* Decorative Elements */}
-      <div className="absolute inset-0 geometric-pattern opacity-30" />
-      <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-secondary/10 blur-3xl" />
-      <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-primary-foreground/5 blur-3xl" />
-      
-      <div className="container-wide relative">
+    <section className="relative overflow-hidden bg-sage-warm">
+      <div className="container-wide py-16 lg:py-24">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="text-center lg:text-left"
           >
-            <h1 className="font-display text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
-              Connect to{" "}
-              <span className="relative">
-                Sacred Knowledge
-                <svg
-                  className="absolute -bottom-2 left-0 w-full"
-                  viewBox="0 0 200 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2 8C50 2 150 2 198 8"
-                    stroke="hsl(43, 65%, 52%)"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
+            <h1 className="headline-hero text-foreground">
+              Learn sacred
+              <br />
+              knowledge with
+              <br />
+              your perfect teacher.
             </h1>
             
-            <p className="mt-6 text-lg text-primary-foreground/80 max-w-xl mx-auto lg:mx-0">
-              Learn Quran, Hadith, and Islamic sciences from trusted teachers in a respectful, focused environment tailored to your journey.
-            </p>
-
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button size="xl" variant="hero" asChild>
-                <Link to="/onboarding">
-                  Begin Your Journey
-                </Link>
-              </Button>
-              <Button size="xl" variant="hero-outline" asChild>
-                <Link to="/teachers">
-                  Meet Our Teachers
+                <Link to="/onboarding" className="gap-2">
+                  <Zap className="h-4 w-4" />
+                  Find your teacher
                 </Link>
               </Button>
             </div>
 
-            {/* Trust Indicators */}
-            <div className="mt-10 flex items-center gap-6 justify-center lg:justify-start text-primary-foreground/70">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span className="text-sm">500+ Students</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                <span className="text-sm">50+ Teachers</span>
-              </div>
-            </div>
+            <p className="mt-6 text-muted-foreground">
+              Or{" "}
+              <Link to="/teachers" className="text-foreground underline underline-offset-4 hover:text-primary">
+                choose from 50+ verified scholars
+              </Link>
+            </p>
           </motion.div>
 
-          {/* Right Content - Goal Selector Card */}
+          {/* Right Content - Photo Collage */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="relative flex justify-center lg:justify-end"
           >
-            <div className="rounded-2xl bg-card p-8 shadow-lg">
-              <div className="flex items-center gap-2 text-primary mb-6">
-                <Sparkles className="h-5 w-5" />
-                <span className="font-display font-semibold">What's Your Goal?</span>
-              </div>
+            {/* Main Teacher Photo */}
+            <div className="relative">
+              {/* Background layers for depth */}
+              <div className="absolute -top-4 -left-4 w-64 h-80 sm:w-80 sm:h-96 rounded-3xl bg-primary/10 -z-10" />
+              <div className="absolute -top-2 -left-2 w-64 h-80 sm:w-80 sm:h-96 rounded-3xl bg-primary/20 -z-5" />
               
-              <div className="space-y-3">
-                {learningGoals.map((goal, index) => (
-                  <motion.div
-                    key={goal}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + index * 0.1 }}
-                    className="group flex items-center gap-3 rounded-xl border-2 border-transparent bg-muted/50 p-4 cursor-pointer transition-all hover:border-primary hover:bg-primary/5"
-                  >
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-muted-foreground/30 group-hover:border-primary group-hover:bg-primary">
-                      <Check className="h-4 w-4 text-transparent group-hover:text-primary-foreground" />
+              {/* Main photo placeholder */}
+              <div className="w-64 h-80 sm:w-80 sm:h-96 rounded-3xl bg-gradient-to-br from-primary/30 to-primary/60 flex items-center justify-center overflow-hidden shadow-xl">
+                <div className="text-center text-primary-foreground/80">
+                  <div className="w-24 h-24 mx-auto rounded-full bg-primary-foreground/20 flex items-center justify-center mb-4">
+                    <span className="font-arabic text-4xl">م</span>
+                  </div>
+                  <p className="text-sm font-medium">Verified Teacher</p>
+                </div>
+              </div>
+
+              {/* Overlay - Student video call */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.4 }}
+                className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-8 w-32 h-40 sm:w-40 sm:h-48 rounded-2xl bg-card shadow-lg border border-border overflow-hidden"
+              >
+                <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-primary/20 flex items-center justify-center mb-2">
+                      <span className="font-arabic text-lg text-primary">ط</span>
                     </div>
-                    <span className="font-medium text-foreground">{goal}</span>
-                  </motion.div>
-                ))}
-              </div>
+                    <p className="text-xs text-muted-foreground">Student</p>
+                  </div>
+                </div>
+                {/* Video call indicator */}
+                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary animate-pulse" />
+              </motion.div>
 
-              <div className="mt-6 pt-6 border-t border-border">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">New to Islamic studies?</span>{" "}
-                  Try our Spiritual Explorer Mode
-                </p>
-              </div>
+              {/* Rating badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.4 }}
+                className="absolute -top-2 right-4 sm:right-8 bg-card shadow-lg rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-border"
+              >
+                <Star className="h-4 w-4 fill-secondary text-secondary" />
+                <span className="text-sm font-semibold text-foreground">4.9</span>
+              </motion.div>
             </div>
-
-            {/* Floating Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="absolute -bottom-6 -left-6 rounded-xl bg-secondary/95 p-4 shadow-lg max-w-[200px] hidden lg:block"
-            >
-              <p className="text-sm font-medium text-secondary-foreground">
-                ✨ Personalized Learning
-              </p>
-              <p className="text-xs text-secondary-foreground/80 mt-1">
-                Matched with teachers who understand your goals
-              </p>
-            </motion.div>
           </motion.div>
+        </div>
+      </div>
+
+      {/* Social Proof Bar */}
+      <div className="border-t border-border bg-background">
+        <div className="container-wide py-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            <div className="stat-card">
+              <span className="stat-number">500+</span>
+              <span className="stat-label">Active Students</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">50+</span>
+              <span className="stat-label">Verified Teachers</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">15+</span>
+              <span className="stat-label">Countries</span>
+            </div>
+            <div className="stat-card">
+              <div className="flex items-center gap-1">
+                <Star className="h-5 w-5 fill-secondary text-secondary" />
+                <span className="stat-number">4.9</span>
+              </div>
+              <span className="stat-label">Student Rating</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
