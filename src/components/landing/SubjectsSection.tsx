@@ -4,32 +4,40 @@ import { ArrowRight } from "lucide-react";
 
 const subjects = [
   {
-    arabicLetter: "ق",
-    title: "Quran",
-    description: "Memorization, Tajweed, Tafsir",
-    color: "from-primary to-teal-light",
+    icon: "🕌",
+    title: "Quran Studies",
+    teacherCount: 127,
     href: "/bundles?subject=quran",
   },
   {
-    arabicLetter: "ح",
-    title: "Hadith",
-    description: "Collections, Methodology, Explanation",
-    color: "from-secondary to-gold-light",
+    icon: "📿",
+    title: "Hadith Sciences",
+    teacherCount: 43,
     href: "/bundles?subject=hadith",
   },
   {
-    arabicLetter: "ف",
+    icon: "⚖️",
     title: "Fiqh",
-    description: "Islamic Jurisprudence, Madhabs",
-    color: "from-accent to-emerald-400",
+    teacherCount: 38,
     href: "/bundles?subject=fiqh",
   },
   {
-    arabicLetter: "ع",
+    icon: "🌙",
     title: "Aqeedah",
-    description: "Islamic Theology, Creed",
-    color: "from-teal-dark to-primary",
+    teacherCount: 31,
     href: "/bundles?subject=aqeedah",
+  },
+  {
+    icon: "🌿",
+    title: "Tazkiyah",
+    teacherCount: 25,
+    href: "/bundles?subject=tazkiyah",
+  },
+  {
+    icon: "📖",
+    title: "Arabic",
+    teacherCount: 52,
+    href: "/bundles?subject=arabic",
   },
 ];
 
@@ -42,41 +50,38 @@ export function SubjectsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="mb-10"
         >
-          <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
-            Explore Sacred Subjects
+          <h2 className="headline-section text-foreground">
+            Explore subjects
           </h2>
-          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-            Discover comprehensive learning paths in the core disciplines of Islamic knowledge
-          </p>
-          <div className="section-divider mt-6" />
         </motion.div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {subjects.map((subject, index) => (
             <motion.div
               key={subject.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
             >
               <Link
                 to={subject.href}
-                className="group block card-interactive p-6 h-full"
+                className="group flex items-center justify-between p-5 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-card transition-all duration-200"
               >
-                <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br ${subject.color}`}>
-                  <span className="font-arabic text-3xl text-primary-foreground">
-                    {subject.arabicLetter}
-                  </span>
+                <div className="flex items-center gap-4">
+                  <span className="text-2xl">{subject.icon}</span>
+                  <div>
+                    <h3 className="font-display font-semibold text-foreground group-hover:text-primary transition-colors">
+                      {subject.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {subject.teacherCount} teachers
+                    </p>
+                  </div>
                 </div>
-                <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {subject.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {subject.description}
-                </p>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
               </Link>
             </motion.div>
           ))}
@@ -86,15 +91,14 @@ export function SubjectsSection() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-10 text-center"
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-8 text-center"
         >
           <Link
             to="/subjects"
-            className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            View All Subjects
-            <ArrowRight className="h-4 w-4" />
+            + Show more
           </Link>
         </motion.div>
       </div>

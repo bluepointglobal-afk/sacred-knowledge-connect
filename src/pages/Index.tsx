@@ -5,6 +5,7 @@ import { ValuePropsSection } from "@/components/landing/ValuePropsSection";
 import { SubjectsSection } from "@/components/landing/SubjectsSection";
 import { FeaturedTeachersSection } from "@/components/landing/FeaturedTeachersSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
+import { BecomeTeacherSection } from "@/components/landing/BecomeTeacherSection";
 import { CTASection } from "@/components/landing/CTASection";
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
         <SubjectsSection />
         <FeaturedTeachersSection />
         <TestimonialsSection />
+        <BecomeTeacherSection />
         <CTASection />
       </main>
       <Footer />

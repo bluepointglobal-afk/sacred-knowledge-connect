@@ -15,11 +15,11 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
       <nav className="container-wide flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
             <span className="font-arabic text-xl text-primary-foreground">ع</span>
           </div>
           <span className="font-display text-xl font-bold text-foreground">
@@ -33,7 +33,7 @@ export function Header() {
             <Link
               key={item.name}
               to={item.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {item.name}
             </Link>
@@ -42,10 +42,10 @@ export function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex md:items-center md:gap-3">
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" size="sm" asChild>
             <Link to="/login">Log in</Link>
           </Button>
-          <Button asChild>
+          <Button size="sm" asChild>
             <Link to="/onboarding">Get Started</Link>
           </Button>
         </div>
@@ -53,7 +53,7 @@ export function Header() {
         {/* Mobile menu button */}
         <button
           type="button"
-          className="md:hidden -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-foreground"
+          className="md:hidden -m-2.5 inline-flex items-center justify-center rounded-lg p-2.5 text-foreground hover:bg-muted"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           <span className="sr-only">Toggle menu</span>
@@ -70,12 +70,12 @@ export function Header() {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden border-t border-border bg-background"
           >
-            <div className="container-wide py-4 space-y-3">
+            <div className="container-wide py-4 space-y-1">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="block py-2 text-base font-medium text-foreground hover:text-primary"
+                  className="block py-3 px-3 rounded-lg text-base font-medium text-foreground hover:bg-muted"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}
