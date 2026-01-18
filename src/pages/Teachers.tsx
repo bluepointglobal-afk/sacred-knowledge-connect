@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
@@ -6,20 +6,62 @@ import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
-  Search, 
-  Star, 
-  Shield, 
+import {
+  Search,
+  Star,
+  Shield,
   Filter,
   Grid,
   List,
   MapPin,
-  Clock
+  Clock,
+  Loader2
 } from "lucide-react";
+import { useTeachers } from "@/hooks/useTeachers";
+import type { TeacherProfileWithUser } from "@/types/database";
 
-const allTeachers = [
+// Helper to transform database teacher to UI format
+interface TeacherUI {
+  id: string;
+  name: string;
+  title: string;
+  avatar: string;
+  rating: number;
+  reviewCount: number;
+  specializations: string[];
+  languages: string[];
+  location: string;
+  isVerified: boolean;
+  yearsExperience: number;
+  availability: string;
+  isFeatured: boolean;
+}
+
+function transformTeacher(teacher: TeacherProfileWithUser): TeacherUI {
+  const profile = teacher.profiles;
+  const name = profile?.full_name || profile?.email?.split("@")[0] || "Teacher";
+
+  return {
+    id: teacher.id,
+    name,
+    title: teacher.headline || "Islamic Studies Teacher",
+    avatar: name.charAt(0).toUpperCase(),
+    rating: teacher.average_rating || 0,
+    reviewCount: teacher.total_sessions || 0,
+    specializations: teacher.specializations || [],
+    languages: [], // Not in current schema - could add later
+    location: "", // Not in current schema - could add later
+    isVerified: teacher.is_verified,
+    yearsExperience: teacher.years_experience || 0,
+    availability: "Flexible", // Could parse from teacher.availability JSON
+    isFeatured: teacher.is_featured,
+  };
+}
+
+// Mock data for development fallback (shown when no teachers in DB)
+const mockTeachers: TeacherUI[] = [
   {
-    id: "1",
+    id: "mock-1",
     name: "Sheikh Ahmad Ibrahim",
     title: "Quran & Tajweed Specialist",
     avatar: "A",
@@ -34,7 +76,7 @@ const allTeachers = [
     isFeatured: true,
   },
   {
-    id: "2",
+    id: "mock-2",
     name: "Ustadha Maryam Hassan",
     title: "Hadith & Islamic Studies",
     avatar: "M",
@@ -49,7 +91,7 @@ const allTeachers = [
     isFeatured: true,
   },
   {
-    id: "3",
+    id: "mock-3",
     name: "Sheikh Yusuf Ali",
     title: "Fiqh & Arabic Language",
     avatar: "Y",
@@ -64,7 +106,7 @@ const allTeachers = [
     isFeatured: false,
   },
   {
-    id: "4",
+    id: "mock-4",
     name: "Ustadh Omar Farooq",
     title: "Aqeedah & Comparative Religion",
     avatar: "O",
@@ -79,7 +121,7 @@ const allTeachers = [
     isFeatured: false,
   },
   {
-    id: "5",
+    id: "mock-5",
     name: "Ustadha Fatima Zahra",
     title: "Children's Islamic Education",
     avatar: "F",
@@ -94,7 +136,7 @@ const allTeachers = [
     isFeatured: false,
   },
   {
-    id: "6",
+    id: "mock-6",
     name: "Sheikh Ibrahim Mohammed",
     title: "Tasawwuf & Spiritual Guidance",
     avatar: "I",
@@ -114,8 +156,68 @@ const Teachers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const featuredTeachers = allTeachers.filter((t) => t.isFeatured);
-  const regularTeachers = allTeachers.filter((t) => !t.isFeatured);
+  // Fetch teachers from Supabase
+  const { data: dbTeachers, isLoading, error } = useTeachers({ limit: 50 });
+
+  // Transform DB teachers or use mock data as fallback
+  const allTeachers = useMemo(() => {
+    if (dbTeachers && dbTeachers.length > 0) {
+      return dbTeachers.map(transformTeacher);
+    }
+    // Return mock data when no teachers in DB
+    return mockTeachers;
+  }, [dbTeachers]);
+
+  // Filter teachers based on search query
+  const filteredTeachers = useMemo(() => {
+    if (!searchQuery.trim()) return allTeachers;
+    const query = searchQuery.toLowerCase();
+    return allTeachers.filter(
+      (t) =>
+        t.name.toLowerCase().includes(query) ||
+        t.title.toLowerCase().includes(query) ||
+        t.specializations.some((s) => s.toLowerCase().includes(query))
+    );
+  }, [allTeachers, searchQuery]);
+
+  const featuredTeachers = filteredTeachers.filter((t) => t.isFeatured);
+  const regularTeachers = filteredTeachers.filter((t) => !t.isFeatured);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="py-12 lg:py-16">
+          <div className="container-wide flex justify-center items-center min-h-[400px]">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-muted-foreground">Loading teachers...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="py-12 lg:py-16">
+          <div className="container-wide flex justify-center items-center min-h-[400px]">
+            <div className="text-center">
+              <p className="text-destructive mb-4">Failed to load teachers</p>
+              <Button onClick={() => window.location.reload()}>Try Again</Button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -259,7 +361,7 @@ const Teachers = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <h2 className="font-display text-xl font-semibold text-foreground mb-6">
-              All Teachers ({allTeachers.length})
+              All Teachers ({filteredTeachers.length})
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {regularTeachers.map((teacher) => (

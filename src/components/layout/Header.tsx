@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navigation = [
   { name: "Teachers", href: "/teachers" },
@@ -13,6 +14,14 @@ const navigation = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+    setMobileMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
@@ -42,12 +51,29 @@ export function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex md:items-center md:gap-3">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">Log in</Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link to="/onboarding">Get Started</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/dashboard">
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Log out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">Log in</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link to="/onboarding">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -82,12 +108,29 @@ export function Header() {
                 </Link>
               ))}
               <div className="pt-4 flex flex-col gap-3">
-                <Button variant="outline" asChild className="w-full">
-                  <Link to="/login">Log in</Link>
-                </Button>
-                <Button asChild className="w-full">
-                  <Link to="/onboarding">Get Started</Link>
-                </Button>
+                {user ? (
+                  <>
+                    <Button variant="outline" className="w-full" asChild>
+                      <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                        <LayoutDashboard className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" className="w-full" onClick={handleSignOut}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Log out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" asChild className="w-full">
+                      <Link to="/login">Log in</Link>
+                    </Button>
+                    <Button asChild className="w-full">
+                      <Link to="/onboarding">Get Started</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

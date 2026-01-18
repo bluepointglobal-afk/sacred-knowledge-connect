@@ -1,0 +1,20 @@
+{
+  "name": "sacredchain-testing",
+  "version": "1.0.0",
+  "description": "Navigation testing suite for SacredChain",
+  "scripts": {
+    "test": "playwright test",
+    "test:nav": "playwright test --project=navigation",
+    "test:auth": "playwright test --project=auth",
+    "test:flows": "playwright test --project=flows",
+    "test:quick": "playwright test navigation.spec.ts --grep 'Public Routes Load'",
+    "test:debug": "playwright test --project=navigation --headed",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "precommit": "npm run test:nav"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0"
+  }
+}

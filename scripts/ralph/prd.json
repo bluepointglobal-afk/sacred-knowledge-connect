@@ -1,0 +1,139 @@
+{
+  "feature": "stripe-payments",
+  "version": "1.0.0",
+  "verifiers": [
+    "npm run build 2>&1 | head -50",
+    "npm run lint 2>&1 | head -50"
+  ],
+  "stories": [
+    {
+      "id": "SP-01",
+      "title": "Stripe Setup & Configuration",
+      "passes": true,
+      "branch": "feat/stripe-setup",
+      "description": "Install Stripe packages, create /src/lib/stripe.ts with Stripe client initialization, add env vars to .env.example",
+      "acceptance": [
+        "packages @stripe/stripe-js and @stripe/react-stripe-js installed",
+        "/src/lib/stripe.ts exports loadStripe with VITE_STRIPE_PUBLISHABLE_KEY",
+        ".env.example includes VITE_STRIPE_PUBLISHABLE_KEY"
+      ],
+      "tasks": [
+        "Install @stripe/stripe-js and @stripe/react-stripe-js",
+        "Create /src/lib/stripe.ts with Stripe client",
+        "Add VITE_STRIPE_PUBLISHABLE_KEY to .env.example"
+      ]
+    },
+    {
+      "id": "SP-02",
+      "title": "Database Schema: Payments Tables",
+      "passes": false,
+      "branch": "feat/stripe-schema",
+      "description": "Create migration 004_payments.sql with payments, teacher_earnings, payouts tables and RLS policies",
+      "acceptance": [
+        "Migration file exists at supabase/migrations/004_payments.sql",
+        "payments table has: id, enrollment_id, stripe_payment_intent_id, amount_cents, currency, status, created_at",
+        "teacher_earnings table has: id, teacher_id, enrollment_id, amount_cents, platform_fee_cents, net_amount_cents, status",
+        "payouts table has: id, teacher_id, stripe_payout_id, amount_cents, status, requested_at, completed_at",
+        "RLS policies defined for all tables"
+      ],
+      "tasks": [
+        "Create payments table",
+        "Create teacher_earnings table",
+        "Create payouts table",
+        "Add stripe_customer_id to profiles",
+        "Add stripe_connect_account_id to teacher_profiles",
+        "Create RLS policies"
+      ]
+    },
+    {
+      "id": "SP-03",
+      "title": "Payment Hooks",
+      "passes": false,
+      "branch": "feat/stripe-hooks",
+      "description": "Create /src/hooks/usePayments.ts with checkout session creation and payment status hooks",
+      "acceptance": [
+        "/src/hooks/usePayments.ts exists",
+        "Exports useCreateCheckoutSession mutation hook",
+        "Exports usePaymentsByEnrollment query hook",
+        "TypeScript types defined"
+      ],
+      "tasks": [
+        "Create usePayments.ts hook file",
+        "Implement useCreateCheckoutSession mutation",
+        "Implement usePaymentsByEnrollment query",
+        "Add TypeScript types"
+      ]
+    },
+    {
+      "id": "SP-04",
+      "title": "Checkout UI Components",
+      "passes": false,
+      "branch": "feat/stripe-checkout-ui",
+      "description": "Create CheckoutButton component and Checkout, CheckoutSuccess, CheckoutCancel pages",
+      "acceptance": [
+        "/src/components/checkout/CheckoutButton.tsx exists",
+        "/src/pages/Checkout.tsx exists",
+        "/src/pages/CheckoutSuccess.tsx exists",
+        "/src/pages/CheckoutCancel.tsx exists",
+        "Routes added to App.tsx"
+      ],
+      "tasks": [
+        "Create CheckoutButton.tsx component",
+        "Create Checkout.tsx page",
+        "Create CheckoutSuccess.tsx page",
+        "Create CheckoutCancel.tsx page",
+        "Add routes to App.tsx"
+      ]
+    },
+    {
+      "id": "SP-05",
+      "title": "Update BundleDetail with Payment Flow",
+      "passes": false,
+      "branch": "feat/stripe-bundle-detail",
+      "description": "Update BundleDetail.tsx to show 'Buy Now' for paid bundles and handle free bundles",
+      "acceptance": [
+        "Paid bundles (price_cents > 0) show 'Buy Now' button",
+        "Free bundles (price_cents = 0) show 'Enroll Free' and bypass checkout",
+        "Price displayed formatted as currency",
+        "CheckoutButton integrated"
+      ],
+      "tasks": [
+        "Add price formatting utility",
+        "Conditional render Buy Now vs Enroll Free",
+        "Integrate CheckoutButton for paid bundles",
+        "Test free bundle direct enrollment"
+      ]
+    },
+    {
+      "id": "SP-06",
+      "title": "Teacher Earnings Hook & Page",
+      "passes": false,
+      "branch": "feat/stripe-earnings",
+      "description": "Create useEarnings hook and TeacherEarnings page for teachers to view earnings",
+      "acceptance": [
+        "/src/hooks/useEarnings.ts exists",
+        "/src/pages/TeacherEarnings.tsx exists",
+        "Route /teacher/earnings added to App.tsx",
+        "Displays total earnings, pending, paid amounts",
+        "Shows earnings history table"
+      ],
+      "tasks": [
+        "Create useEarnings.ts hook",
+        "Create TeacherEarnings.tsx page",
+        "Add route to App.tsx",
+        "Display earnings summary cards",
+        "Display earnings history table"
+      ]
+    }
+  ],
+  "config": {
+    "platform_fee_percent": 15,
+    "currency": "USD",
+    "minimum_payout_cents": 5000
+  },
+  "metadata": {
+    "created_at": "2026-01-18",
+    "source": "tasks/tasks-stripe-payments.md",
+    "total_stories": 6
+  }
+}

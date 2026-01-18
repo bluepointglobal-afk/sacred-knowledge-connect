@@ -1,20 +1,68 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Star, 
-  Clock, 
+import {
+  Star,
+  Clock,
   Calendar,
   BookOpen,
-  Award
+  Award,
+  Loader2
 } from "lucide-react";
+import { useBundles } from "@/hooks/useBundles";
+import type { BundleWithTeacher } from "@/types/database";
 
-const bundles = [
+// Helper to transform database bundle to UI format
+interface BundleUI {
+  id: string;
+  title: string;
+  description: string;
+  subject: string;
+  level: string;
+  durationWeeks: number;
+  sessionsPerWeek: number;
+  sessionLength: number;
+  price: number;
+  teacher: {
+    name: string;
+    avatar: string;
+    rating: number;
+  };
+  isFeatured: boolean;
+}
+
+function transformBundle(bundle: BundleWithTeacher): BundleUI {
+  const teacherProfile = bundle.teacher_profiles;
+  const profile = teacherProfile?.profiles;
+  const teacherName = profile?.full_name || profile?.email?.split("@")[0] || "Teacher";
+
+  return {
+    id: bundle.id,
+    title: bundle.title,
+    description: bundle.description || bundle.short_description || "",
+    subject: bundle.category || "Islamic Studies",
+    level: bundle.level || "All Levels",
+    durationWeeks: bundle.duration_weeks || 0,
+    sessionsPerWeek: Math.ceil((bundle.total_sessions || 0) / Math.max(bundle.duration_weeks || 1, 1)),
+    sessionLength: 60, // Default - could be stored in bundle_items
+    price: Math.round((bundle.price_cents || 0) / 100),
+    teacher: {
+      name: teacherName,
+      avatar: teacherName.charAt(0).toUpperCase(),
+      rating: teacherProfile?.average_rating || 0,
+    },
+    isFeatured: bundle.is_featured,
+  };
+}
+
+// Mock data for development fallback (shown when no bundles in DB)
+const mockBundles: BundleUI[] = [
   {
-    id: "1",
+    id: "mock-1",
     title: "Complete Tajweed Mastery",
     description: "Master the art of Quranic recitation with proper pronunciation and rules of tajweed from the basics to advanced levels.",
     subject: "Quran",
@@ -31,7 +79,7 @@ const bundles = [
     isFeatured: true,
   },
   {
-    id: "2",
+    id: "mock-2",
     title: "40 Hadith of Imam Nawawi",
     description: "Deep dive into the foundational 40 hadith compiled by Imam Nawawi, understanding their meanings and practical applications.",
     subject: "Hadith",
@@ -48,7 +96,7 @@ const bundles = [
     isFeatured: true,
   },
   {
-    id: "3",
+    id: "mock-3",
     title: "Foundations of Islamic Jurisprudence",
     description: "Learn the principles of fiqh and understand how Islamic rulings are derived from primary sources.",
     subject: "Fiqh",
@@ -65,7 +113,7 @@ const bundles = [
     isFeatured: true,
   },
   {
-    id: "4",
+    id: "mock-4",
     title: "Juz Amma Memorization",
     description: "Memorize the 30th Juz of the Quran with proper tajweed and understanding of the verses.",
     subject: "Quran",
@@ -82,7 +130,7 @@ const bundles = [
     isFeatured: false,
   },
   {
-    id: "5",
+    id: "mock-5",
     title: "Islamic Creed Essentials",
     description: "Understand the fundamental beliefs of Islam through classical texts and contemporary explanations.",
     subject: "Aqeedah",
@@ -99,7 +147,7 @@ const bundles = [
     isFeatured: false,
   },
   {
-    id: "6",
+    id: "mock-6",
     title: "Purification of the Soul",
     description: "A journey into the science of tasawwuf and spiritual development according to the Quran and Sunnah.",
     subject: "Spirituality",
@@ -126,8 +174,56 @@ const subjectColors: Record<string, string> = {
 };
 
 const Bundles = () => {
-  const featuredBundles = bundles.filter((b) => b.isFeatured);
-  const regularBundles = bundles.filter((b) => !b.isFeatured);
+  // Fetch bundles from Supabase
+  const { data: dbBundles, isLoading, error } = useBundles({ limit: 50 });
+
+  // Transform DB bundles or use mock data as fallback
+  const allBundles = useMemo(() => {
+    if (dbBundles && dbBundles.length > 0) {
+      return dbBundles.map(transformBundle);
+    }
+    // Return mock data when no bundles in DB
+    return mockBundles;
+  }, [dbBundles]);
+
+  const featuredBundles = allBundles.filter((b) => b.isFeatured);
+  const regularBundles = allBundles.filter((b) => !b.isFeatured);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="py-12 lg:py-16">
+          <div className="container-wide flex justify-center items-center min-h-[400px]">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-muted-foreground">Loading bundles...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="py-12 lg:py-16">
+          <div className="container-wide flex justify-center items-center min-h-[400px]">
+            <div className="text-center">
+              <p className="text-destructive mb-4">Failed to load bundles</p>
+              <Button onClick={() => window.location.reload()}>Try Again</Button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

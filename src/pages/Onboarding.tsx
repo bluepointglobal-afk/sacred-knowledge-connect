@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { 
-  BookOpen, 
-  Search, 
+import {
+  BookOpen,
+  Search,
   Lightbulb,
   ArrowRight,
-  Check
+  Check,
+  Loader2
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSaveOnboardingResponse, useOnboardingResponses } from "@/hooks/useOnboarding";
 
 type PathType = "student_of_knowledge" | "truth_seeker" | null;
 
@@ -49,6 +52,10 @@ const timeCommitments = [
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const saveResponse = useSaveOnboardingResponse();
+  const { data: existingResponses, isLoading: responsesLoading } = useOnboardingResponses();
+
   const [pathType, setPathType] = useState<PathType>(null);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [level, setLevel] = useState("");
@@ -57,6 +64,40 @@ const Onboarding = () => {
   const [language, setLanguage] = useState("English");
   const [timeCommitment, setTimeCommitment] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load existing responses if user has already started onboarding
+  useEffect(() => {
+    if (existingResponses && existingResponses.length > 0) {
+      existingResponses.forEach((response) => {
+        const data = response.response as Record<string, unknown>;
+        switch (response.step_key) {
+          case "path_type":
+            setPathType(data.pathType as PathType);
+            break;
+          case "learning_goals":
+            setSelectedGoals(data.goals as string[] || []);
+            break;
+          case "level":
+            setLevel(data.level as string || "");
+            break;
+          case "preferences":
+            setSelectedPreferences(data.preferences as string[] || []);
+            break;
+          case "teacher_preferences":
+            setTeacherGender(data.teacherGender as string || "");
+            setLanguage(data.language as string || "English");
+            break;
+          case "time_commitment":
+            setTimeCommitment(data.timeCommitment as string || "");
+            break;
+          case "additional_notes":
+            setAdditionalNotes(data.notes as string || "");
+            break;
+        }
+      });
+    }
+  }, [existingResponses]);
 
   const toggleGoal = (goal: string) => {
     if (selectedGoals.includes(goal)) {
@@ -74,10 +115,116 @@ const Onboarding = () => {
     }
   };
 
-  const handleSubmit = () => {
-    // In a real app, this would save to database
-    navigate("/matching");
+  const handleSubmit = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Save all responses to database
+      await Promise.all([
+        saveResponse.mutateAsync({
+          stepKey: "path_type",
+          response: { pathType },
+        }),
+        saveResponse.mutateAsync({
+          stepKey: "learning_goals",
+          response: { goals: selectedGoals },
+        }),
+        saveResponse.mutateAsync({
+          stepKey: "level",
+          response: { level },
+        }),
+        saveResponse.mutateAsync({
+          stepKey: "preferences",
+          response: { preferences: selectedPreferences },
+        }),
+        saveResponse.mutateAsync({
+          stepKey: "teacher_preferences",
+          response: { teacherGender, language },
+        }),
+        saveResponse.mutateAsync({
+          stepKey: "time_commitment",
+          response: { timeCommitment },
+        }),
+        saveResponse.mutateAsync({
+          stepKey: "additional_notes",
+          response: { notes: additionalNotes },
+        }),
+      ]);
+
+      // Check for stored redirect URL (from Bundle enrollment flow)
+      const redirectUrl = sessionStorage.getItem("redirectAfterOnboarding");
+      if (redirectUrl) {
+        sessionStorage.removeItem("redirectAfterOnboarding");
+        navigate(redirectUrl);
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Failed to save onboarding responses:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  // Show loading while checking auth
+  if (authLoading || responsesLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="py-12 lg:py-16">
+          <div className="container-wide flex justify-center items-center min-h-[400px]">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-muted-foreground">Loading...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // If not logged in, show prompt to log in
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="py-12 lg:py-16">
+          <div className="container-wide max-w-md">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
+                <BookOpen className="h-8 w-8 text-primary" />
+              </div>
+              <h1 className="font-display text-2xl font-bold text-foreground mb-4">
+                Start Your Sacred Knowledge Journey
+              </h1>
+              <p className="text-muted-foreground mb-8">
+                Create an account or sign in to begin your personalized learning journey.
+              </p>
+              <div className="flex flex-col gap-3">
+                <Button size="lg" className="w-full" asChild>
+                  <Link to="/login">Sign In or Create Account</Link>
+                </Button>
+                <Button size="lg" variant="outline" className="w-full" asChild>
+                  <Link to="/teachers">Browse Teachers First</Link>
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -342,9 +489,18 @@ const Onboarding = () => {
             transition={{ duration: 0.5, delay: 0.8 }}
             className="text-center"
           >
-            <Button size="xl" onClick={handleSubmit}>
-              Find My Perfect Learning Path
-              <ArrowRight className="ml-2 h-5 w-5" />
+            <Button size="xl" onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  Find My Perfect Learning Path
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </>
+              )}
             </Button>
 
             {/* AI Note */}
