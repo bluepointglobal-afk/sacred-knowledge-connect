@@ -107,7 +107,7 @@
     {
       "id": "SP-06",
       "title": "Teacher Earnings Hook & Page",
-      "passes": false,
+      "passes": true,
       "branch": "feat/stripe-earnings",
       "description": "Create useEarnings hook and TeacherEarnings page for teachers to view earnings",
       "acceptance": [
