@@ -48,7 +48,7 @@
     {
       "id": "SP-03",
       "title": "Payment Hooks",
-      "passes": false,
+      "passes": true,
       "branch": "feat/stripe-hooks",
       "description": "Create /src/hooks/usePayments.ts with checkout session creation and payment status hooks",
       "acceptance": [
