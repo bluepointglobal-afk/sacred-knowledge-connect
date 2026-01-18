@@ -88,7 +88,7 @@
     {
       "id": "SP-05",
       "title": "Update BundleDetail with Payment Flow",
-      "passes": false,
+      "passes": true,
       "branch": "feat/stripe-bundle-detail",
       "description": "Update BundleDetail.tsx to show 'Buy Now' for paid bundles and handle free bundles",
       "acceptance": [
