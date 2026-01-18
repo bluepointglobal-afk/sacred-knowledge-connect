@@ -67,7 +67,7 @@
     {
       "id": "SP-04",
       "title": "Checkout UI Components",
-      "passes": false,
+      "passes": true,
       "branch": "feat/stripe-checkout-ui",
       "description": "Create CheckoutButton component and Checkout, CheckoutSuccess, CheckoutCancel pages",
       "acceptance": [
