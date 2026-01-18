@@ -26,7 +26,7 @@
     {
       "id": "SP-02",
       "title": "Database Schema: Payments Tables",
-      "passes": false,
+      "passes": true,
       "branch": "feat/stripe-schema",
       "description": "Create migration 004_payments.sql with payments, teacher_earnings, payouts tables and RLS policies",
       "acceptance": [
