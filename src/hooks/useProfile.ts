@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Profile, ProfileUpdate } from "@/types/database";
+import type { Profile, ProfileUpdate, TeacherProfile } from "@/types/database";
 
 export function useProfile() {
   const { user } = useAuth();
@@ -45,5 +45,26 @@ export function useUpdateProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
     },
+  });
+}
+
+export function useTeacherProfile() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["teacherProfile", user?.id],
+    queryFn: async (): Promise<TeacherProfile | null> => {
+      if (!user?.id) return null;
+
+      const { data, error } = await supabase
+        .from("teacher_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
   });
 }

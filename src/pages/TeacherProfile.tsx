@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useTeacher } from "@/hooks/useTeachers";
 import { useBundlesByTeacher } from "@/hooks/useBundles";
+import { SessionCheckoutButton } from "@/components/payments";
 
 const TeacherProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -283,14 +284,26 @@ const TeacherProfile = () => {
                   </div>
                 )}
 
-                <Button className="w-full mb-3" asChild>
-                  <Link to={bundles && bundles.length > 0 ? `/bundles/${bundles[0].id}` : "/bundles"}>
-                    {bundles && bundles.length > 0 ? "View First Bundle" : "Browse Bundles"}
-                  </Link>
-                </Button>
+                {/* Session Checkout Button */}
+                <SessionCheckoutButton
+                  teacherId={teacher.user_id}
+                  teacherName={teacherName}
+                  hourlyRateCents={teacher.hourly_rate_cents}
+                  currency={teacher.currency}
+                  className="w-full mb-3"
+                />
+
+                {/* Bundle Link */}
+                {bundles && bundles.length > 0 && (
+                  <Button variant="outline" className="w-full mb-3" asChild>
+                    <Link to={`/bundles/${bundles[0].id}`}>
+                      Or View Bundle Package
+                    </Link>
+                  </Button>
+                )}
 
                 <p className="text-xs text-muted-foreground text-center">
-                  Start with a bundle to begin learning
+                  Secure payment powered by Stripe
                 </p>
 
                 {/* Quick Stats */}

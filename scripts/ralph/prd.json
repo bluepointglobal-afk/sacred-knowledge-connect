@@ -1,139 +1,195 @@
 {
-  "feature": "stripe-payments",
-  "version": "1.0.0",
+  "feature": "stripe-payments-complete",
+  "version": "2.0.0",
+  "priority": "P0",
   "verifiers": [
-    "npm run build 2>&1 | head -50",
-    "npm run lint 2>&1 | head -50"
+    "test -f supabase/functions/create-checkout-session/index.ts && echo 'Checkout function exists'",
+    "test -f supabase/functions/stripe-webhook/index.ts && echo 'Webhook function exists'",
+    "test -f supabase/functions/create-connect-account/index.ts && echo 'Connect function exists'",
+    "test -f supabase/functions/request-payout/index.ts && echo 'Payout function exists'",
+    "grep -q 'escrow' src/hooks/usePayments.ts && echo 'Escrow logic in hooks'",
+    "npm run build 2>&1 | head -50"
   ],
   "stories": [
     {
-      "id": "SP-01",
-      "title": "Stripe Setup & Configuration",
+      "id": "SP-07",
+      "title": "Session Purchase Checkout",
       "passes": true,
-      "branch": "feat/stripe-setup",
-      "description": "Install Stripe packages, create /src/lib/stripe.ts with Stripe client initialization, add env vars to .env.example",
+      "branch": "feat/stripe-payments",
+      "description": "Enable students to purchase single hourly sessions from teacher profiles",
       "acceptance": [
-        "packages @stripe/stripe-js and @stripe/react-stripe-js installed",
-        "/src/lib/stripe.ts exports loadStripe with VITE_STRIPE_PUBLISHABLE_KEY",
-        ".env.example includes VITE_STRIPE_PUBLISHABLE_KEY"
+        "useSessionCheckout.ts hook created",
+        "create-checkout-session handles session type",
+        "SessionCheckoutButton.tsx renders on teacher profile",
+        "Session created with status 'scheduled' after payment",
+        "Payment record linked to session_id"
       ],
       "tasks": [
-        "Install @stripe/stripe-js and @stripe/react-stripe-js",
-        "Create /src/lib/stripe.ts with Stripe client",
-        "Add VITE_STRIPE_PUBLISHABLE_KEY to .env.example"
+        "Create useSessionCheckout.ts hook",
+        "Update create-checkout-session Edge Function for session type",
+        "Create SessionCheckoutButton.tsx component",
+        "Add checkout flow to teacher profile page",
+        "Handle session creation on checkout success webhook"
       ]
     },
     {
-      "id": "SP-02",
-      "title": "Database Schema: Payments Tables",
+      "id": "SP-08",
+      "title": "Escrow Hold System",
       "passes": true,
-      "branch": "feat/stripe-schema",
-      "description": "Create migration 004_payments.sql with payments, teacher_earnings, payouts tables and RLS policies",
+      "branch": "feat/stripe-payments",
+      "description": "Hold payments in escrow until session is confirmed complete",
       "acceptance": [
-        "Migration file exists at supabase/migrations/004_payments.sql",
-        "payments table has: id, enrollment_id, stripe_payment_intent_id, amount_cents, currency, status, created_at",
-        "teacher_earnings table has: id, teacher_id, enrollment_id, amount_cents, platform_fee_cents, net_amount_cents, status",
-        "payouts table has: id, teacher_id, stripe_payout_id, amount_cents, status, requested_at, completed_at",
-        "RLS policies defined for all tables"
+        "New payments start with status 'held' not 'completed'",
+        "teacher_earnings created with status 'pending'",
+        "escrow_released_at column exists on payments",
+        "available_at column exists on teacher_earnings",
+        "Earnings dashboard shows pending vs available amounts"
       ],
       "tasks": [
-        "Create payments table",
-        "Create teacher_earnings table",
-        "Create payouts table",
-        "Add stripe_customer_id to profiles",
-        "Add stripe_connect_account_id to teacher_profiles",
-        "Create RLS policies"
+        "Add escrow_released_at column to payments",
+        "Add available_at column to teacher_earnings",
+        "Update webhook to create payment with status 'held'",
+        "Update webhook to create earning with status 'pending'",
+        "Update earnings dashboard UI to show pending vs available"
       ]
     },
     {
-      "id": "SP-03",
-      "title": "Payment Hooks",
+      "id": "SP-09",
+      "title": "Escrow Release Logic",
       "passes": true,
-      "branch": "feat/stripe-hooks",
-      "description": "Create /src/hooks/usePayments.ts with checkout session creation and payment status hooks",
+      "branch": "feat/stripe-payments",
+      "description": "Automatically release escrow 24 hours after session completion",
       "acceptance": [
-        "/src/hooks/usePayments.ts exists",
-        "Exports useCreateCheckoutSession mutation hook",
-        "Exports usePaymentsByEnrollment query hook",
-        "TypeScript types defined"
+        "release-escrow Edge Function created",
+        "Session completion triggers escrow timer (available_at = now + 24h)",
+        "Mature escrows release automatically (payment 'completed', earning 'available')",
+        "Student no-show releases funds to teacher",
+        "Teacher no-show triggers refund"
       ],
       "tasks": [
-        "Create usePayments.ts hook file",
-        "Implement useCreateCheckoutSession mutation",
-        "Implement usePaymentsByEnrollment query",
-        "Add TypeScript types"
+        "Create release-escrow Edge Function",
+        "Add trigger on session status change to 'completed'",
+        "Set available_at to NOW() + 24 hours on completion",
+        "Create pg_cron job to release mature escrows",
+        "Handle no-show scenarios"
       ]
     },
     {
-      "id": "SP-04",
-      "title": "Checkout UI Components",
+      "id": "SP-10",
+      "title": "Stripe Connect Onboarding",
       "passes": true,
-      "branch": "feat/stripe-checkout-ui",
-      "description": "Create CheckoutButton component and Checkout, CheckoutSuccess, CheckoutCancel pages",
+      "branch": "feat/stripe-payments",
+      "description": "Enable teachers to receive payouts via Stripe Connect",
       "acceptance": [
-        "/src/components/checkout/CheckoutButton.tsx exists",
-        "/src/pages/Checkout.tsx exists",
-        "/src/pages/CheckoutSuccess.tsx exists",
-        "/src/pages/CheckoutCancel.tsx exists",
-        "Routes added to App.tsx"
+        "create-connect-account Edge Function created",
+        "create-connect-link Edge Function created",
+        "TeacherStripeSetup.tsx page created",
+        "stripe_account_id stored after Connect creation",
+        "Connect status shown on teacher dashboard",
+        "Payout blocked if Connect not verified"
       ],
       "tasks": [
-        "Create CheckoutButton.tsx component",
-        "Create Checkout.tsx page",
-        "Create CheckoutSuccess.tsx page",
-        "Create CheckoutCancel.tsx page",
-        "Add routes to App.tsx"
+        "Create create-connect-account Edge Function",
+        "Create create-connect-link Edge Function",
+        "Create TeacherStripeSetup.tsx page",
+        "Handle account.updated webhook event",
+        "Add Connect status indicator to dashboard"
       ]
     },
     {
-      "id": "SP-05",
-      "title": "Update BundleDetail with Payment Flow",
+      "id": "SP-11",
+      "title": "Payout Request System",
       "passes": true,
-      "branch": "feat/stripe-bundle-detail",
-      "description": "Update BundleDetail.tsx to show 'Buy Now' for paid bundles and handle free bundles",
+      "branch": "feat/stripe-payments",
+      "description": "Teachers can request payouts of available earnings",
       "acceptance": [
-        "Paid bundles (price_cents > 0) show 'Buy Now' button",
-        "Free bundles (price_cents = 0) show 'Enroll Free' and bypass checkout",
-        "Price displayed formatted as currency",
-        "CheckoutButton integrated"
+        "request-payout Edge Function created",
+        "RequestPayoutButton.tsx component created",
+        "PayoutHistory.tsx component created",
+        "Minimum payout validation ($50)",
+        "Payout creates Stripe Transfer to Connected account",
+        "Payout history shows all requests with status"
       ],
       "tasks": [
-        "Add price formatting utility",
-        "Conditional render Buy Now vs Enroll Free",
-        "Integrate CheckoutButton for paid bundles",
-        "Test free bundle direct enrollment"
+        "Create request-payout Edge Function",
+        "Create RequestPayoutButton.tsx",
+        "Create PayoutHistory.tsx",
+        "Validate minimum $50 payout",
+        "Validate Connect account active",
+        "Create Stripe Transfer on request"
       ]
     },
     {
-      "id": "SP-06",
-      "title": "Teacher Earnings Hook & Page",
+      "id": "SP-12",
+      "title": "Complete Webhook Handler",
       "passes": true,
-      "branch": "feat/stripe-earnings",
-      "description": "Create useEarnings hook and TeacherEarnings page for teachers to view earnings",
+      "branch": "feat/stripe-payments",
+      "description": "Handle all Stripe webhook events reliably",
       "acceptance": [
-        "/src/hooks/useEarnings.ts exists",
-        "/src/pages/TeacherEarnings.tsx exists",
-        "Route /teacher/earnings added to App.tsx",
-        "Displays total earnings, pending, paid amounts",
-        "Shows earnings history table"
+        "checkout.session.completed handled",
+        "payment_intent.payment_failed handled",
+        "charge.refunded handled (updates payment + forfeits earning)",
+        "charge.dispute.created handled (holds earning)",
+        "account.updated handled (Connect status)",
+        "transfer.created/failed handled",
+        "payout.paid/failed handled",
+        "Idempotency checks prevent duplicate processing"
       ],
       "tasks": [
-        "Create useEarnings.ts hook",
-        "Create TeacherEarnings.tsx page",
-        "Add route to App.tsx",
-        "Display earnings summary cards",
-        "Display earnings history table"
+        "Handle checkout.session.completed",
+        "Handle payment_intent.payment_failed",
+        "Handle charge.refunded",
+        "Handle charge.dispute.created",
+        "Handle account.updated",
+        "Handle transfer events",
+        "Handle payout events",
+        "Add idempotency checks"
+      ]
+    },
+    {
+      "id": "SP-13",
+      "title": "Edge Functions Deployment",
+      "passes": true,
+      "branch": "feat/stripe-payments",
+      "description": "Deploy and test all Edge Functions in production",
+      "acceptance": [
+        "create-checkout-session deployed",
+        "stripe-webhook deployed",
+        "create-connect-account deployed",
+        "create-connect-link deployed",
+        "request-payout deployed",
+        "release-escrow deployed",
+        "Webhook URL configured in Stripe",
+        "End-to-end payment flow works",
+        "End-to-end payout flow works"
+      ],
+      "tasks": [
+        "Create supabase/functions/create-checkout-session/index.ts",
+        "Create supabase/functions/stripe-webhook/index.ts",
+        "Create supabase/functions/create-connect-account/index.ts",
+        "Create supabase/functions/create-connect-link/index.ts",
+        "Create supabase/functions/request-payout/index.ts",
+        "Create supabase/functions/release-escrow/index.ts",
+        "Deploy functions with supabase functions deploy",
+        "Configure Stripe webhook endpoint",
+        "Test end-to-end flows"
       ]
     }
   ],
   "config": {
     "platform_fee_percent": 15,
-    "currency": "USD",
-    "minimum_payout_cents": 5000
+    "teacher_share_percent": 85,
+    "minimum_payout_cents": 5000,
+    "escrow_hold_hours": 24,
+    "currency": "usd"
   },
   "metadata": {
-    "created_at": "2026-01-18",
+    "created_at": "2025-01-20",
+    "updated_at": "2025-01-21",
     "source": "tasks/tasks-stripe-payments.md",
-    "total_stories": 6
+    "total_stories": 7,
+    "completed_stories": 7,
+    "feature_id": "P0",
+    "depends_on": ["SP-01", "SP-02", "SP-03", "SP-04", "SP-05", "SP-06"]
   }
 }

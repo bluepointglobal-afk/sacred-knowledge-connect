@@ -4,5 +4,6 @@ export * from "./useTeachers";
 export * from "./useBundles";
 export * from "./useOnboarding";
 export * from "./useEnrollments";
+export * from "./usePayments";
 export * from "./use-mobile";
 export * from "./use-toast";

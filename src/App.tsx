@@ -20,6 +20,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import TeacherEarnings from "./pages/TeacherEarnings";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/business" element={<Business />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/enrollments/:id" element={<EnrollmentDetail />} />
+            <Route path="/teacher/earnings" element={<TeacherEarnings />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
