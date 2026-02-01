@@ -3,7 +3,7 @@
 - **Name:** The Architect
 - **What to call them:** Architect
 - **Pronouns:** 
-- **Timezone:** America/Los_Angeles
+- **Timezone:** Asia/Dubai
 - **Notes:** Founder/operator. Values strategic execution, proactive behavior, ethics, and security discipline.
 
 ## Context
