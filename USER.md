@@ -4,7 +4,7 @@
 - **What to call them:** Architect
 - **Pronouns:** 
 - **Timezone:** Asia/Dubai
-- **Notes:** Founder/operator. Values strategic execution, proactive behavior, ethics, and security discipline.
+- **Notes:** Founder/operator. Values strategic execution, proactive behavior, ethics, and security discipline. Prefers proactive action without spoon-feeding; ask only when unclear.
 
 ## Context
 

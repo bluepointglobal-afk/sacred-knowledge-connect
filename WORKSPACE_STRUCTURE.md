@@ -69,3 +69,4 @@ Retired/old material.
 ## Preferences (Architect)
 - **Naming:** Prefer `Title_Case` for new/renamed items, while preserving enough of the original name to recognize it.
 - **Archival:** Ask for confirmation before moving anything into `09_ARCHIVE/`.
+- **Autonomy:** Default to action when it makes total sense; ask questions only when ambiguous.
