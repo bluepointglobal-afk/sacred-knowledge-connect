@@ -65,3 +65,7 @@ Retired/old material.
 2) Repos you’re actively working on live in **`03_REPOS/`**.
 3) Anything “truth/authority” goes in **`01_CHARTERS/`**.
 4) Anything meant to be sent out goes in **`08_ARTIFACTS/`**.
+
+## Preferences (Architect)
+- **Naming:** Prefer `Title_Case` for new/renamed items, while preserving enough of the original name to recognize it.
+- **Archival:** Ask for confirmation before moving anything into `09_ARCHIVE/`.
