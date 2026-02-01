@@ -1,0 +1,8 @@
+# Local repos and large drops (kept outside this workspace meta-repo)
+03_REPOS/
+00_INBOX/repos/
+00_INBOX/zips/
+00_INBOX/assets/
+
+# OS noise
+.DS_Store
