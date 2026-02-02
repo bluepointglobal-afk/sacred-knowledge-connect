@@ -6,7 +6,7 @@ Small companies in UAE/KSA/Qatar that must comply but lack internal ESG expertis
 
 ## Offer (two-stage)
 1) **Free/Freemium:** Compliance score + gap analysis (fast)
-2) **Paid:** Disclosure + Sustainability Report aligned to applicable framework(s) by industry + jurisdiction
+2) **Paid (chosen):** **Full Sustainability Report** (includes disclosure) aligned to applicable framework(s) by industry + jurisdiction
 
 ## Fastest feedback loop (7 days)
 ### Hypothesis
