@@ -109,7 +109,8 @@ export function TeacherOnboarding() {
 
   // Global payout + scheduling fields
   const tzOptions = useMemo(() => {
-    const supported = (Intl as any).supportedValuesOf?.("timeZone") as string[] | undefined;
+    const supportedValuesOf = (Intl as unknown as { supportedValuesOf?: (key: string) => string[] }).supportedValuesOf;
+    const supported = supportedValuesOf?.("timeZone");
     return supported?.length ? supported : FALLBACK_TIMEZONES;
   }, []);
 
@@ -131,7 +132,11 @@ export function TeacherOnboarding() {
   const handleCreateAccount = async () => {
     setIsSubmitting(true);
     try {
-      const { error, autoLoggedIn } = (await signUpWithEmail(signupEmail, signupPassword)) as any;
+      const res = (await signUpWithEmail(signupEmail, signupPassword)) as unknown as {
+        error: { message?: string } | null;
+        autoLoggedIn?: boolean;
+      };
+      const { error, autoLoggedIn } = res;
       if (error) {
         toast({
           title: "Signup failed",
