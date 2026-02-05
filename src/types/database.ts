@@ -32,6 +32,11 @@ export interface TeacherProfile {
   headline: string | null;
   specializations: string[];
   qualifications: string[];
+  /** Phase 2 onboarding fields */
+  phone?: string | null;
+  credentials_url?: string | null;
+  experience_level?: string | null;
+
   hourly_rate_cents: number;
   currency: string;
   years_experience: number;
@@ -46,6 +51,31 @@ export interface TeacherProfile {
   stripe_onboarded: boolean;
   stripe_charges_enabled: boolean;
   stripe_payouts_enabled: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Course {
+  id: string;
+  teacher_id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  price_per_session_cents: number;
+  currency: string;
+  max_students: number;
+  status: "draft" | "published";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Schedule {
+  id: string;
+  course_id: string;
+  day_of_week: number; // 0..6
+  start_time: string; // TIME
+  end_time: string; // TIME
+  timezone: string;
   created_at: string;
   updated_at: string;
 }
@@ -189,6 +219,12 @@ export type ProfileUpdate = Partial<Omit<Profile, "id" | "created_at" | "updated
 export type TeacherProfileInsert = Omit<TeacherProfile, "id" | "created_at" | "updated_at" | "total_students" | "total_sessions" | "average_rating">;
 export type TeacherProfileUpdate = Partial<Omit<TeacherProfile, "id" | "user_id" | "created_at" | "updated_at">>;
 
+export type CourseInsert = Omit<Course, "id" | "created_at" | "updated_at">;
+export type CourseUpdate = Partial<Omit<Course, "id" | "teacher_id" | "created_at" | "updated_at">>;
+
+export type ScheduleInsert = Omit<Schedule, "id" | "created_at" | "updated_at">;
+export type ScheduleUpdate = Partial<Omit<Schedule, "id" | "course_id" | "created_at" | "updated_at">>;
+
 export type BundleInsert = Omit<Bundle, "id" | "created_at" | "updated_at" | "total_enrollments" | "average_rating">;
 export type BundleUpdate = Partial<Omit<Bundle, "id" | "teacher_id" | "created_at" | "updated_at">>;
 
@@ -304,6 +340,16 @@ export interface Database {
         Row: TeacherProfile;
         Insert: TeacherProfileInsert;
         Update: TeacherProfileUpdate;
+      };
+      courses: {
+        Row: Course;
+        Insert: CourseInsert;
+        Update: CourseUpdate;
+      };
+      schedules: {
+        Row: Schedule;
+        Insert: ScheduleInsert;
+        Update: ScheduleUpdate;
       };
       bundles: {
         Row: Bundle;

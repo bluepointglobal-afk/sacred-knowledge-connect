@@ -21,6 +21,9 @@ import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import TeacherEarnings from "./pages/TeacherEarnings";
+import BecomeTeacher from "./pages/BecomeTeacher";
+import TeacherCourseNew from "./pages/TeacherCourseNew";
+import TeacherCourseAvailability from "./pages/TeacherCourseAvailability";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +46,9 @@ const App = () => (
             <Route path="/business" element={<Business />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/enrollments/:id" element={<EnrollmentDetail />} />
+            <Route path="/become-teacher" element={<BecomeTeacher />} />
+            <Route path="/teacher/courses/new" element={<TeacherCourseNew />} />
+            <Route path="/teacher/courses/:id/availability" element={<TeacherCourseAvailability />} />
             <Route path="/teacher/earnings" element={<TeacherEarnings />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/privacy" element={<Privacy />} />
