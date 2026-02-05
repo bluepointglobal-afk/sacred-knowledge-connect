@@ -36,6 +36,15 @@ export interface TeacherProfile {
   phone?: string | null;
   credentials_url?: string | null;
   experience_level?: string | null;
+  
+  /** Phase 2 global payout fields */
+  payout_method?: "wise" | "paypal" | "iban" | null;
+  iban_or_account_number?: string | null;
+  country_of_bank?: string | null;
+  payout_account_holder_name?: string | null;
+  
+  /** Phase 2 timezone field for global scheduling */
+  timezone?: string;
 
   hourly_rate_cents: number;
   currency: string;
