@@ -20,6 +20,9 @@ import { supabase } from "@/lib/supabase";
 import { withMockFallback, MOCK_TEACHERS } from "@/lib/mock-data";
 
 const EXPERIENCE_LEVELS = ["beginner", "intermediate", "expert"] as const;
+const PAYOUT_METHODS = ["wise", "paypal", "iban"] as const;
+
+type PayoutMethod = (typeof PAYOUT_METHODS)[number];
 
 function normalizeSpecializations(input: string): string[] {
   return input
@@ -28,6 +31,62 @@ function normalizeSpecializations(input: string): string[] {
     .filter(Boolean)
     .slice(0, 8);
 }
+
+function normalizeIban(input: string): string {
+  return input.replace(/\s+/g, "").toUpperCase();
+}
+
+function isValidIban(input: string): boolean {
+  const iban = normalizeIban(input);
+  // Lightweight client-side validation (format only). Server-side validation can be stricter.
+  return /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban);
+}
+
+function isValidEmail(input: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim());
+}
+
+const FALLBACK_TIMEZONES = [
+  "UTC",
+  "America/New_York",
+  "America/Chicago",
+  "America/Los_Angeles",
+  "Europe/London",
+  "Europe/Paris",
+  "Europe/Istanbul",
+  "Africa/Cairo",
+  "Africa/Casablanca",
+  "Asia/Dubai",
+  "Asia/Karachi",
+  "Asia/Dhaka",
+  "Asia/Jakarta",
+  "Asia/Kuala_Lumpur",
+  "Asia/Singapore",
+  "Asia/Bangkok",
+  "Asia/Manila",
+  "Asia/Tokyo",
+];
+
+const BANK_COUNTRIES = [
+  "Morocco",
+  "Algeria",
+  "Tunisia",
+  "Egypt",
+  "Pakistan",
+  "Bangladesh",
+  "Indonesia",
+  "Malaysia",
+  "Turkey",
+  "United Kingdom",
+  "United States",
+  "Canada",
+  "Germany",
+  "France",
+  "Netherlands",
+  "Spain",
+  "Italy",
+  "Other",
+];
 
 export function TeacherOnboarding() {
   const navigate = useNavigate();
@@ -48,6 +107,23 @@ export function TeacherOnboarding() {
   const [credentialsUrl, setCredentialsUrl] = useState("");
   const [availabilityPref, setAvailabilityPref] = useState("");
 
+  // Global payout + scheduling fields
+  const tzOptions = useMemo(() => {
+    const supported = (Intl as any).supportedValuesOf?.("timeZone") as string[] | undefined;
+    return supported?.length ? supported : FALLBACK_TIMEZONES;
+  }, []);
+
+  const [timezone, setTimezone] = useState(
+    Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC"
+  );
+
+  const [payoutMethod, setPayoutMethod] = useState<PayoutMethod | "">("");
+  const [payoutAccountHolderName, setPayoutAccountHolderName] = useState("");
+  const [paypalEmail, setPaypalEmail] = useState("");
+  const [bankCountry, setBankCountry] = useState("");
+  const [ibanNumber, setIbanNumber] = useState("");
+  const [wiseAccount, setWiseAccount] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const specializationTags = useMemo(() => normalizeSpecializations(specialization), [specialization]);
@@ -55,7 +131,7 @@ export function TeacherOnboarding() {
   const handleCreateAccount = async () => {
     setIsSubmitting(true);
     try {
-      const { error, autoLoggedIn } = await signUpWithEmail(signupEmail, signupPassword) as any;
+      const { error, autoLoggedIn } = (await signUpWithEmail(signupEmail, signupPassword)) as any;
       if (error) {
         toast({
           title: "Signup failed",
@@ -97,6 +173,57 @@ export function TeacherOnboarding() {
       return;
     }
 
+    if (!timezone) {
+      toast({ title: "Timezone is required", description: "Select your timezone for scheduling.", variant: "destructive" });
+      return;
+    }
+
+    if (!payoutMethod) {
+      toast({
+        title: "Payout method is required",
+        description: "Select how you want to receive payouts (you can update later).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!payoutAccountHolderName.trim()) {
+      toast({ title: "Account holder name is required", variant: "destructive" });
+      return;
+    }
+
+    if (payoutMethod === "paypal") {
+      if (!paypalEmail.trim() || !isValidEmail(paypalEmail)) {
+        toast({ title: "Valid PayPal email is required", variant: "destructive" });
+        return;
+      }
+    }
+
+    if (payoutMethod === "wise") {
+      if (!wiseAccount.trim()) {
+        toast({ title: "Wise account is required", description: "Enter the email/identifier used for your Wise account.", variant: "destructive" });
+        return;
+      }
+    }
+
+    if (payoutMethod === "iban") {
+      if (!bankCountry.trim()) {
+        toast({ title: "Bank country is required", variant: "destructive" });
+        return;
+      }
+      if (!ibanNumber.trim() || !isValidIban(ibanNumber)) {
+        toast({ title: "Valid IBAN is required", description: "Please check the IBAN format.", variant: "destructive" });
+        return;
+      }
+    }
+
+    const ibanOrAccountNumber =
+      payoutMethod === "iban"
+        ? normalizeIban(ibanNumber)
+        : payoutMethod === "paypal"
+          ? paypalEmail.trim()
+          : wiseAccount.trim();
+
     setIsSubmitting(true);
 
     try {
@@ -133,6 +260,11 @@ export function TeacherOnboarding() {
               availability: {
                 preference: availabilityPref.trim() || null,
               },
+              timezone,
+              payout_method: payoutMethod,
+              iban_or_account_number: ibanOrAccountNumber || null,
+              country_of_bank: payoutMethod === "iban" ? (bankCountry.trim() || null) : null,
+              payout_account_holder_name: payoutAccountHolderName.trim() || null,
             })
             .select("*")
             .single();
@@ -146,6 +278,11 @@ export function TeacherOnboarding() {
           user_id: user.id,
           bio,
           specializations: specializationTags,
+          timezone,
+          payout_method: payoutMethod,
+          iban_or_account_number: ibanOrAccountNumber,
+          country_of_bank: bankCountry,
+          payout_account_holder_name: payoutAccountHolderName,
         } as any,
         "TeacherOnboarding:createTeacherProfile"
       );
@@ -186,7 +323,11 @@ export function TeacherOnboarding() {
               <CardHeader>
                 <CardTitle>Create an account</CardTitle>
                 <CardDescription>
-                  Already have an account? <Link className="underline" to="/login">Log in</Link>.
+                  Already have an account?{" "}
+                  <Link className="underline" to="/login">
+                    Log in
+                  </Link>
+                  .
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -212,7 +353,10 @@ export function TeacherOnboarding() {
                     dir="auto"
                   />
                 </div>
-                <Button onClick={handleCreateAccount} disabled={isSubmitting || !signupEmail || !signupPassword}>
+                <Button
+                  onClick={handleCreateAccount}
+                  disabled={isSubmitting || !signupEmail || !signupPassword}
+                >
                   Create account
                 </Button>
                 {awaitingEmailVerification && (
@@ -247,7 +391,7 @@ export function TeacherOnboarding() {
                   id="phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g., +966 5X XXX XXXX"
+                  placeholder="e.g., +1 555 123 4567"
                   dir="auto"
                 />
               </div>
@@ -303,14 +447,128 @@ export function TeacherOnboarding() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="availabilityPref">Availability preference</Label>
+                <Label>Timezone</Label>
+                <Select value={timezone} onValueChange={setTimezone}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your timezone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tzOptions.map((tz) => (
+                      <SelectItem key={tz} value={tz}>
+                        {tz}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  This is used to convert your availability for students in other timezones.
+                </p>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="availabilityPref">Availability preference (optional)</Label>
                 <Textarea
                   id="availabilityPref"
                   value={availabilityPref}
                   onChange={(e) => setAvailabilityPref(e.target.value)}
-                  placeholder="Example: Weekdays 6–9pm (Asia/Riyadh), weekends flexible"
+                  placeholder={`Example: Weekdays 6–9pm (${timezone}), weekends flexible`}
                   dir="auto"
                 />
+              </div>
+
+              <div className="border rounded-md p-4 space-y-4">
+                <div>
+                  <h3 className="font-semibold">Payout details</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Global payouts: choose the method that works best in your country.
+                  </p>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>Payout method</Label>
+                  <Select value={payoutMethod} onValueChange={(v) => setPayoutMethod(v as any)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select payout method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="wise">Wise</SelectItem>
+                      <SelectItem value="paypal">PayPal</SelectItem>
+                      <SelectItem value="iban">Bank IBAN</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="holder">Account holder name</Label>
+                  <Input
+                    id="holder"
+                    value={payoutAccountHolderName}
+                    onChange={(e) => setPayoutAccountHolderName(e.target.value)}
+                    placeholder="Name on the account"
+                    dir="auto"
+                  />
+                </div>
+
+                {payoutMethod === "paypal" && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="paypal">PayPal email</Label>
+                    <Input
+                      id="paypal"
+                      type="email"
+                      value={paypalEmail}
+                      onChange={(e) => setPaypalEmail(e.target.value)}
+                      placeholder="paypal@example.com"
+                      dir="auto"
+                    />
+                  </div>
+                )}
+
+                {payoutMethod === "wise" && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="wise">Wise account (email or identifier)</Label>
+                    <Input
+                      id="wise"
+                      value={wiseAccount}
+                      onChange={(e) => setWiseAccount(e.target.value)}
+                      placeholder="wise@example.com"
+                      dir="auto"
+                    />
+                  </div>
+                )}
+
+                {payoutMethod === "iban" && (
+                  <>
+                    <div className="grid gap-2">
+                      <Label>Bank country</Label>
+                      <Select value={bankCountry} onValueChange={setBankCountry}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select bank country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BANK_COUNTRIES.map((c) => (
+                            <SelectItem key={c} value={c}>
+                              {c}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <Label htmlFor="iban">IBAN number</Label>
+                      <Input
+                        id="iban"
+                        value={ibanNumber}
+                        onChange={(e) => setIbanNumber(e.target.value)}
+                        placeholder="e.g., GB82 WEST 1234 5698 7654 32"
+                        dir="auto"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        We accept spaces — they’ll be removed automatically.
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="flex items-center gap-3">
