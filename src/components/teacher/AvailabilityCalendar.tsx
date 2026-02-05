@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,93 +25,190 @@ const DOW = [
   { v: 6, label: "Saturday" },
 ];
 
-/**
- * Convert local time (HH:MM) in a given timezone to UTC time (HH:MM).
- * This is a simplified conversion for MVP; production would use proper date-time libraries.
- */
-function convertToUTC(localTime: string, timezone: string): string {
-  try {
-    // Create a date object in the teacher's timezone
-    const now = new Date();
-    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
-    const localDateTimeStr = `${dateStr}T${localTime}:00`;
-    
-    // Parse in local timezone and convert to UTC
-    const localDate = new Date(localDateTimeStr + getTimezoneOffset(timezone));
-    const utcTime = localDate.toISOString().substring(11, 16); // HH:MM
-    return utcTime;
-  } catch {
-    // Fallback: return original time if conversion fails
-    return localTime;
-  }
+const FALLBACK_TIMEZONES = [
+  "UTC",
+  "America/New_York",
+  "America/Chicago",
+  "America/Los_Angeles",
+  "Europe/London",
+  "Europe/Paris",
+  "Europe/Istanbul",
+  "Africa/Cairo",
+  "Africa/Casablanca",
+  "Asia/Dubai",
+  "Asia/Karachi",
+  "Asia/Dhaka",
+  "Asia/Jakarta",
+  "Asia/Kuala_Lumpur",
+  "Asia/Singapore",
+  "Asia/Bangkok",
+  "Asia/Manila",
+  "Asia/Tokyo",
+];
+
+function getDatePartsInTimeZone(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? "0");
+
+  return {
+    year: get("year"),
+    month: get("month"),
+    day: get("day"),
+    hour: get("hour"),
+    minute: get("minute"),
+    second: get("second"),
+  };
 }
 
-/**
- * Get timezone offset string for Date constructor (e.g., "+05:30" or "-08:00")
- * Simplified for MVP - in production, use Intl or date-fns-tz
- */
-function getTimezoneOffset(timezone: string): string {
-  try {
-    const date = new Date();
-    const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
-    const tzDate = new Date(date.toLocaleString('en-US', { timeZone: timezone }));
-    const offset = (tzDate.getTime() - utcDate.getTime()) / (1000 * 60 * 60);
-    const sign = offset >= 0 ? '+' : '-';
-    const absOffset = Math.abs(offset);
-    const hours = Math.floor(absOffset);
-    const minutes = Math.round((absOffset - hours) * 60);
-    return `${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  } catch {
-    return '+00:00';
-  }
+function getTimeZoneOffsetMs(timeZone: string, date: Date): number {
+  // Offset = (date-as-rendered-in-tz) - (actual date)
+  const p = getDatePartsInTimeZone(date, timeZone);
+  const asUTC = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+  return asUTC - date.getTime();
+}
+
+function zonedLocalToUtcDate(opts: {
+  timeZone: string;
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+}): Date {
+  const guess = new Date(Date.UTC(opts.year, opts.month - 1, opts.day, opts.hour, opts.minute, 0));
+  const offset = getTimeZoneOffsetMs(opts.timeZone, guess);
+  return new Date(guess.getTime() - offset);
+}
+
+function parseHHMM(time: string): { hour: number; minute: number } | null {
+  const m = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(time);
+  if (!m) return null;
+  return { hour: Number(m[1]), minute: Number(m[2]) };
+}
+
+function nextOccurrenceLocalDateInTz(timeZone: string, targetDow: number): { year: number; month: number; day: number } {
+  // Find the next occurrence of targetDow in the given timezone.
+  const now = new Date();
+  const p = getDatePartsInTimeZone(now, timeZone);
+
+  // Use midday to reduce DST edge cases.
+  const currentUtc = zonedLocalToUtcDate({
+    timeZone,
+    year: p.year,
+    month: p.month,
+    day: p.day,
+    hour: 12,
+    minute: 0,
+  });
+
+  const currentDowInTz = new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short" }).format(currentUtc);
+  const map: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const currentDow = map[currentDowInTz] ?? 0;
+
+  let daysAhead = (targetDow - currentDow + 7) % 7;
+  if (daysAhead === 0) daysAhead = 7; // next occurrence (not today)
+
+  const nextUtc = new Date(currentUtc.getTime() + daysAhead * 24 * 60 * 60 * 1000);
+  const nextParts = getDatePartsInTimeZone(nextUtc, timeZone);
+  return { year: nextParts.year, month: nextParts.month, day: nextParts.day };
 }
 
 export function AvailabilityCalendar({ courseId }: { courseId: string }) {
   const { toast } = useToast();
   const { user } = useAuth();
 
+  const tzOptions = useMemo(() => {
+    const supportedValuesOf = (Intl as unknown as { supportedValuesOf?: (key: string) => string[] }).supportedValuesOf;
+    const supported = supportedValuesOf?.("timeZone");
+    return supported?.length ? supported : FALLBACK_TIMEZONES;
+  }, []);
+
+  const viewerTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
+
   const [dayOfWeek, setDayOfWeek] = useState<string>("1");
   const [startTime, setStartTime] = useState("18:00");
   const [endTime, setEndTime] = useState("20:00");
-  const [teacherTimezone, setTeacherTimezone] = useState<string>("UTC");
+  const [timezone, setTimezone] = useState(viewerTimezone);
+
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingDefaults, setIsLoadingDefaults] = useState(false);
 
   const selectedLabel = useMemo(
     () => DOW.find((d) => String(d.v) === dayOfWeek)?.label ?? "",
     [dayOfWeek]
   );
 
-  // Fetch teacher's timezone on mount
+  // Default timezone from teacher profile
   useEffect(() => {
     if (!user) return;
-    
-    const fetchTeacherTimezone = async () => {
+
+    let cancelled = false;
+    const run = async () => {
+      setIsLoadingDefaults(true);
       try {
-        const result = await withMockFallback(
+        const teacherTz = await withMockFallback(
           async () => {
             const { data, error } = await supabase
               .from("teacher_profiles")
               .select("timezone")
               .eq("user_id", user.id)
-              .single();
-            
+              .maybeSingle();
             if (error) throw error;
-            return data;
+            return (data as { timezone?: string } | null)?.timezone ?? null;
           },
-          { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC" },
-          "AvailabilityCalendar:fetchTimezone"
+          null,
+          "AvailabilityCalendar:loadTeacherTimezone"
         );
-        
-        if (result?.timezone) {
-          setTeacherTimezone(result.timezone);
-        }
+
+        if (!cancelled && teacherTz) setTimezone(teacherTz);
       } catch (err) {
-        console.error("Could not fetch teacher timezone:", err);
+        console.error(err);
+      } finally {
+        if (!cancelled) setIsLoadingDefaults(false);
       }
     };
-    
-    fetchTeacherTimezone();
+
+    run();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
+
+  const convertedPreview = useMemo(() => {
+    const s = parseHHMM(startTime);
+    const e = parseHHMM(endTime);
+    if (!s || !e) return null;
+
+    const targetDow = Number(dayOfWeek);
+    const next = nextOccurrenceLocalDateInTz(timezone, targetDow);
+
+    const startUtc = zonedLocalToUtcDate({ timeZone: timezone, ...next, hour: s.hour, minute: s.minute });
+    const endUtc = zonedLocalToUtcDate({ timeZone: timezone, ...next, hour: e.hour, minute: e.minute });
+
+    const fmt = (d: Date, tz: string) =>
+      new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(d);
+
+    return {
+      viewer: `${fmt(startUtc, viewerTimezone)} – ${fmt(endUtc, viewerTimezone)} (${viewerTimezone})`,
+      teacher: `${fmt(startUtc, timezone)} – ${fmt(endUtc, timezone)} (${timezone})`,
+    };
+  }, [dayOfWeek, startTime, endTime, timezone, viewerTimezone]);
 
   const handleAdd = async () => {
     if (!courseId) return;
@@ -124,10 +221,6 @@ export function AvailabilityCalendar({ courseId }: { courseId: string }) {
       return;
     }
 
-    // Convert local times to UTC for storage
-    const startTimeUTC = convertToUTC(startTime, teacherTimezone);
-    const endTimeUTC = convertToUTC(endTime, teacherTimezone);
-
     setIsSaving(true);
     try {
       await withMockFallback(
@@ -135,9 +228,9 @@ export function AvailabilityCalendar({ courseId }: { courseId: string }) {
           const { error } = await supabase.from("schedules").insert({
             course_id: courseId,
             day_of_week: Number(dayOfWeek),
-            start_time: startTimeUTC, // Store in UTC
-            end_time: endTimeUTC,     // Store in UTC
-            timezone: teacherTimezone,
+            start_time: startTime,
+            end_time: endTime,
+            timezone: timezone || "UTC",
           });
           if (error) throw error;
           return true;
@@ -148,13 +241,13 @@ export function AvailabilityCalendar({ courseId }: { courseId: string }) {
 
       toast({
         title: "Availability added",
-        description: `${selectedLabel}: ${startTime}–${endTime} (${teacherTimezone}) → stored as UTC ${startTimeUTC}–${endTimeUTC}`,
+        description: `${selectedLabel}: ${startTime}–${endTime} (${timezone})`,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       toast({
         title: "Could not save availability",
-        description: err?.message ?? "Please try again.",
+        description: err instanceof Error ? err.message : "Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -167,17 +260,10 @@ export function AvailabilityCalendar({ courseId }: { courseId: string }) {
       <CardHeader>
         <CardTitle>Availability</CardTitle>
         <CardDescription>
-          Set your weekly availability. Times are in your timezone and automatically converted to UTC for global scheduling.
+          Weekly blocks stored with a timezone. Students can view the same times converted into their local timezone.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
-        <div className="rounded-md bg-muted p-3 text-sm">
-          <strong>Your timezone:</strong> {teacherTimezone}
-          <p className="text-xs text-muted-foreground mt-1">
-            Students in other timezones will see your availability converted to their local time.
-          </p>
-        </div>
-
         <div className="grid gap-2">
           <Label>Day of week</Label>
           <Select value={dayOfWeek} onValueChange={setDayOfWeek}>
@@ -196,14 +282,43 @@ export function AvailabilityCalendar({ courseId }: { courseId: string }) {
 
         <div className="grid md:grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="start">Start time ({teacherTimezone})</Label>
+            <Label htmlFor="start">Start time</Label>
             <Input id="start" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="end">End time ({teacherTimezone})</Label>
+            <Label htmlFor="end">End time</Label>
             <Input id="end" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
           </div>
         </div>
+
+        <div className="grid gap-2">
+          <Label>Teacher timezone</Label>
+          <Select value={timezone} onValueChange={setTimezone}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select timezone" />
+            </SelectTrigger>
+            <SelectContent>
+              {tzOptions.map((tz) => (
+                <SelectItem key={tz} value={tz}>
+                  {tz}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            {isLoadingDefaults
+              ? "Loading your timezone…"
+              : `Default is your profile timezone (if set). Viewer timezone: ${viewerTimezone}.`}
+          </p>
+        </div>
+
+        {convertedPreview && timezone !== viewerTimezone && (
+          <div className="rounded-md border p-3 text-sm">
+            <div className="font-medium">Preview conversion</div>
+            <div className="text-muted-foreground">Teacher time: {convertedPreview.teacher}</div>
+            <div className="text-muted-foreground">Viewer time: {convertedPreview.viewer}</div>
+          </div>
+        )}
 
         <Button onClick={handleAdd} disabled={isSaving}>
           Add availability

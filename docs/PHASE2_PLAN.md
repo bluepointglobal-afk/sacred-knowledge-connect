@@ -132,7 +132,14 @@ Definition of Done:
   - Specialization (free text + optional tags)
   - Experience level (Beginner / Intermediate / Expert)
   - Credentials URL (optional)
-  - Availability preference (days + time window)
+  - Timezone (teacher sets; students view converted)
+  - Availability preference (free text, optional)
+- Section C: Payout details (global)
+  - Payout method: Wise / PayPal / Bank IBAN
+  - Account holder name
+  - If Wise: Wise email/identifier
+  - If PayPal: PayPal email
+  - If IBAN: bank country + IBAN
 - Primary CTA: "Submit & Continue"
 - Success: "Profile submitted - next create your first course"
 
@@ -159,8 +166,13 @@ Definition of Done:
 - Student can: find course in marketplace → request/book session → payment flow works end-to-end (existing payment rails)
 
 ## Risks / mitigations
-- **Stripe Connect availability (Saudi/UAE):**
-  - Mitigation: support "manual payout" fallback in MVP; or restrict payouts to supported regions while allowing teaching (disclose clearly)
+- **Global payouts coverage:**
+  - Risk: payout rails vary by teacher region (North Africa / SE Asia / etc.) and Stripe Connect may not cover all countries.
+  - Mitigation (MVP): capture a payout method + payout identifier on onboarding (Wise / PayPal / IBAN), store it securely, and run payouts manually while we validate demand/regions.
+  - Mitigation (later): integrate an automated payout provider once we confirm top corridors.
+- **Timezone mismatch (teachers vs students):**
+  - Risk: NA/SE Asia teacher availability can display incorrectly for Western students.
+  - Mitigation: store availability blocks with teacher timezone; always render availability in the viewer's timezone.
 - **Arabic/RTL not ready:**
   - Mitigation: Phase 2 ships English-first; Sprint 4 reserved for Arabic; ensure content supports Arabic input now
 
