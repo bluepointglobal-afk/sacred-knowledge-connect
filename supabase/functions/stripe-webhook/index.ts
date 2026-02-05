@@ -54,7 +54,12 @@ serve(async (req) => {
     // Handle different event types
     switch (event.type) {
       case "checkout.session.completed":
-        await handleCheckoutCompleted(supabase, event.data.object as Stripe.Checkout.Session, event.id);
+        await handleCheckoutCompleted(
+          supabase,
+          stripe,
+          event.data.object as Stripe.Checkout.Session,
+          event.id
+        );
         break;
 
       case "payment_intent.payment_failed":
@@ -104,6 +109,7 @@ serve(async (req) => {
 
 async function handleCheckoutCompleted(
   supabase: ReturnType<typeof createClient>,
+  stripe: Stripe,
   session: Stripe.Checkout.Session,
   eventId: string
 ) {
@@ -171,6 +177,25 @@ async function handleCheckoutCompleted(
     }
   }
 
+  // Try to capture the Stripe charge ID at time of checkout completion.
+  // This is needed for refund/dispute handlers that key off stripe_charge_id.
+  let stripeChargeId: string | null = null;
+  const paymentIntentId = session.payment_intent as string | null;
+
+  if (paymentIntentId) {
+    try {
+      const pi = await stripe.paymentIntents.retrieve(paymentIntentId, {
+        expand: ["latest_charge"],
+      });
+      const latestCharge = (pi as Stripe.PaymentIntent & {
+        latest_charge?: string | Stripe.Charge | null;
+      }).latest_charge;
+      stripeChargeId = typeof latestCharge === "string" ? latestCharge : latestCharge?.id ?? null;
+    } catch (e) {
+      console.error("Failed to retrieve payment_intent/latest_charge:", e);
+    }
+  }
+
   // Create payment record with status 'held' (escrow)
   const { data: payment, error: paymentError } = await supabase
     .from("payments")
@@ -186,8 +211,9 @@ async function handleCheckoutCompleted(
       currency: session.currency || "usd",
       status: "held", // Start in escrow
       payment_type,
-      stripe_payment_intent_id: session.payment_intent as string,
+      stripe_payment_intent_id: paymentIntentId,
       stripe_checkout_session_id: session.id,
+      stripe_charge_id: stripeChargeId,
       metadata: { stripe_event_id: eventId },
     })
     .select()

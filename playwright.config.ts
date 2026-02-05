@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:8081',
+    baseURL: process.env.BASE_URL || 'http://localhost:8080',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -39,12 +39,20 @@ export default defineConfig({
       testMatch: /auth\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
+
+    // Phase 2 Sprint 1 E2E tests (teacher + student onboarding)
+    {
+      name: 'phase2-sprint1',
+      testMatch: /phase2-sprint1-.*\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+      timeout: 120000, // 2 minutes per test (booking flow can be slow)
+    },
   ],
 
   // Start dev server if not running
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:8081',
+    url: 'http://localhost:8080',
     reuseExistingServer: true,
     timeout: 120 * 1000,
   },

@@ -82,11 +82,16 @@ const BundleDetail = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <main className="py-12 lg:py-16">
-          <div className="container-wide flex justify-center items-center min-h-[400px]">
+          <div className="container-wide flex flex-col justify-center items-center min-h-[400px] gap-4">
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-muted-foreground">Loading bundle details...</p>
             </div>
+
+            {/* Keep primary CTA visible even during load to avoid a blank page */}
+            <Button size="lg" disabled>
+              Enroll Now
+            </Button>
           </div>
         </main>
         <Footer />

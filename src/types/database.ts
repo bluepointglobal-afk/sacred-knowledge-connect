@@ -45,6 +45,11 @@ export interface TeacherProfile {
   
   /** Phase 2 timezone field for global scheduling */
   timezone?: string;
+  
+  /** Phase 2 Sprint 1: Global teacher fields */
+  country_of_residence?: string | null;
+  teaching_languages?: string[];
+  regional_specialization?: "north_africa" | "south_asia" | "middle_east" | "western_diaspora" | null;
 
   hourly_rate_cents: number;
   currency: string;

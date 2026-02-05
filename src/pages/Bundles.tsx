@@ -207,23 +207,7 @@ const Bundles = () => {
     );
   }
 
-  // Show error state
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="py-12 lg:py-16">
-          <div className="container-wide flex justify-center items-center min-h-[400px]">
-            <div className="text-center">
-              <p className="text-destructive mb-4">Failed to load bundles</p>
-              <Button onClick={() => window.location.reload()}>Try Again</Button>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  const usingMockData = !!error;
 
   return (
     <div className="min-h-screen bg-background">
@@ -252,6 +236,17 @@ const Bundles = () => {
         </section>
 
         <div className="container-wide py-12 lg:py-16">
+          {usingMockData && (
+            <div className="mb-8 rounded-lg border border-border bg-muted/40 p-4 text-sm">
+              <p className="text-foreground">
+                Showing <span className="font-medium">demo bundles</span> because Supabase is unreachable in this environment.
+              </p>
+              <p className="mt-1 text-muted-foreground">
+                To disable demo fallback, set <code className="px-1 py-0.5 rounded bg-background border">VITE_USE_MOCK_DATA=false</code>.
+              </p>
+            </div>
+          )}
+
           {/* Featured Bundles */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}

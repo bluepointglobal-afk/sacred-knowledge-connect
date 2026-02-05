@@ -1,191 +1,92 @@
-# SacredChain Navigation Testing Workflow
+# GHOSTY WORKFLOW
 
-## The Loop: Code → Test → Debug → Fix → Repeat
+> Copy this entire file content into Claude Code to start.
+
+---
+
+## PHASE 1: AUDIT
+
+Scan this codebase:
+- src/, app/, components/, pages/
+- package.json, README.md
+- Any existing STATUS.md, BACKLOG.md, PRDs
+
+---
+
+## PHASE 2: SCOPE VALIDATION (REQUIRES USER CONFIRMATION)
+
+Based on audit, present this to user:
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         DEVELOPMENT LOOP                                │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│   ┌──────────────┐                                                      │
-│   │ 1. UPDATE    │ ◄─────────────────────────────────────────────┐      │
-│   │ USER_FLOWS.md│    If adding new routes/features              │      │
-│   └──────┬───────┘                                               │      │
-│          │                                                       │      │
-│          ▼                                                       │      │
-│   ┌──────────────┐                                               │      │
-│   │ 2. CODE      │                                               │      │
-│   │ Feature      │                                               │      │
-│   └──────┬───────┘                                               │      │
-│          │                                                       │      │
-│          ▼                                                       │      │
-│   ┌──────────────┐     ┌──────────────┐                         │      │
-│   │ 3. RUN TESTS │────►│ ALL PASS?    │────► YES ───► COMMIT ───┘      │
-│   │ npm run      │     │              │                                 │
-│   │ test:nav     │     └──────┬───────┘                                 │
-│   └──────────────┘            │                                         │
-│                               │ NO                                      │
-│                               ▼                                         │
-│   ┌──────────────────────────────────────────────────────────┐         │
-│   │ 4. DEBUG WITH CLAUDE                                      │         │
-│   │                                                           │         │
-│   │  "Here's the test failure: [output]                       │         │
-│   │   Here's the expected flow from USER_FLOWS.md: [section]  │         │
-│   │   Help me trace what's wrong."                            │         │
-│   │                                                           │         │
-│   └───────────────────────────┬──────────────────────────────┘         │
-│                               │                                         │
-│                               ▼                                         │
-│   ┌──────────────┐     ┌──────────────┐                                │
-│   │ 5. FIX       │────►│ RUN TESTS    │────► Loop back to step 3       │
-│   │              │     │ AGAIN        │                                 │
-│   └──────────────┘     └──────────────┘                                │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
+═══════════════════════════════════════════════════════════════════
+SCOPE VALIDATION - Please confirm or correct
+═══════════════════════════════════════════════════════════════════
+
+Product Type: [SaaS / Mobile / Web / API / Content]
+Market:       [B2B / B2C / Internal / Hybrid]
+Persona:      [SME / Consumer / Enterprise / Developer / Creator]
+
+Outcome (1 sentence):
+[What the user achieves with this product]
+
+Deliverables:
+- [What the product outputs - files, reports, screens, etc.]
+
+Success Criteria:
+- [How we measure it works]
+
+───────────────────────────────────────────────────────────────────
+QUESTIONS - Reply with answers or corrections:
+
+1. Is product type correct?
+2. Who is the primary user?
+3. What ONE thing should they achieve?
+4. Top incomplete feature to ship first?
+5. Any constraints? (tech stack, timeline, compliance, budget)
+═══════════════════════════════════════════════════════════════════
+```
+
+**STOP. Wait for user response before continuing.**
+
+---
+
+## PHASE 3: LOCK & PLAN (after user confirms)
+
+1. Generate SCOPE.md (locked)
+2. Create/update BACKLOG.md with ALL incomplete features, prioritized
+3. Pick #1 feature from backlog
+4. Create tasks/tasks-<feature>.md with checkboxes
+5. Convert to scripts/ralph/prd.json
+
+---
+
+## PHASE 4: EXECUTE
+
+Tell user:
+
+```
+Ready to ship: [feature name]
+Stories: [count]
+Run: make ship
 ```
 
 ---
 
-## Quick Reference Commands
+## PHASE 5: VALIDATE & SHIP
 
-```bash
-# Quick smoke test (30 seconds)
-npm run test:quick
+After stories complete, fill reports/SCORE.json:
+- Score each: mission_fit, deliverable_quality, outcome, UX, market_readiness (0-100)
+- Calculate total_percent
 
-# Full navigation tests (2-3 minutes)
-npm run test:nav
-
-# See what's happening visually
-npm run test:debug
-
-# Interactive test UI (best for debugging)
-npm run test:ui
-
-# View last test report
-npm run report
-
-# Pre-commit check
-npm run precommit
-```
+If score >= threshold: READY TO SHIP
+If score < threshold: Create GAP_REPORT.md, loop back
 
 ---
 
-## Daily Workflow
+## RULES
 
-### Starting Your Day
-```bash
-# Pull latest, then verify navigation still works
-npm run test:nav
-```
-
-### While Coding
-```bash
-# After any router/navigation change
-npm run test:quick
-
-# If quick test fails
-npm run test:debug   # See what's happening
-```
-
-### Before Committing
-```bash
-# Always run full test
-npm run test:nav
-
-# If pass → commit
-# If fail → debug with Claude, fix, re-test
-```
-
----
-
-## Files in This Testing Suite
-
-```
-sacredchain-testing/
-├── USER_FLOWS.md              # Source of truth - expected navigation
-├── CLAUDE_DEBUG_PROMPTS.md    # Copy-paste prompts for debugging
-├── WORKFLOW.md                # This file - the process
-├── playwright.config.ts       # Test configuration
-├── package.json               # Scripts and dependencies
-├── test-nav.sh               # Bash runner with nice output
-└── tests/
-    ├── navigation.spec.ts    # Core route tests (run frequently)
-    ├── auth.spec.ts          # Login/logout/redirect tests
-    └── flow-student.spec.ts  # Full user journey tests
-```
-
----
-
-## Setup (One Time)
-
-```bash
-# Install dependencies
-npm install
-
-# Install browsers for Playwright
-npx playwright install chromium
-
-# Make test script executable
-chmod +x test-nav.sh
-
-# Run first test to verify setup
-npm run test:quick
-```
-
----
-
-## Integration with Your SacredChain Project
-
-Copy these files into your SacredChain repo:
-
-```bash
-# From your sacredchain directory:
-cp -r /path/to/sacredchain-testing/* ./testing/
-
-# Or merge into existing structure:
-cp USER_FLOWS.md ./docs/
-cp -r tests/* ./tests/e2e/
-cp playwright.config.ts ./
-```
-
-Add to your existing package.json scripts:
-```json
-{
-  "scripts": {
-    "test:nav": "playwright test --project=navigation",
-    "test:debug": "playwright test --headed"
-  }
-}
-```
-
----
-
-## When Things Break (Debugging Guide)
-
-### "Route not found" or 404
-1. Check `USER_FLOWS.md` - is the route documented?
-2. Check your router config (React Router)
-3. Check if the route is behind auth guard
-
-### "Element not visible"
-1. Run `npm run test:debug` to see the page state
-2. Check if element is conditionally rendered
-3. Check if data needs to load first (add waitFor)
-
-### "Timeout waiting for navigation"
-1. Check if redirect is happening
-2. Check auth state - are you logged in/out as expected?
-3. Check for infinite redirect loops
-
-### "Expected X but got Y"
-1. Trace the flow in `USER_FLOWS.md`
-2. Find where actual diverges from expected
-3. Check the component/route at that divergence point
-
----
-
-## The Golden Rule
-
-**Never commit code without `npm run test:nav` passing.**
-
-This single habit will save you hours of debugging broken flows later.
+1. **Never skip PHASE 2** - User must confirm scope
+2. **One feature at a time** - Backlog holds the rest
+3. **make ship is the only command** - It runs everything
+4. **SCOPE.md is sacred** - Changes require new questionnaire
+5. **Agent detects, user confirms** - No assumptions

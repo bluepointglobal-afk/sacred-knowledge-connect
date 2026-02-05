@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { MOCK_TEACHERS, withMockFallback } from "@/lib/mock-data";
 import type { TeacherProfileWithUser } from "@/types/database";
 
 // Cache times for teacher data (relatively static)
@@ -20,27 +21,36 @@ export function useTeachers(options: UseTeachersOptions = {}) {
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
     queryFn: async (): Promise<TeacherProfileWithUser[]> => {
-      let query = supabase
-        .from("teacher_profiles")
-        .select(`
-          *,
-          profiles (*)
-        `)
-        .eq("is_verified", true)
-        .limit(limit);
+      return withMockFallback(
+        async () => {
+          let query = supabase
+            .from("teacher_profiles")
+            .select(`
+              *,
+              profiles (*)
+            `)
+            .eq("is_verified", true)
+            .limit(limit);
 
-      if (featured) {
-        query = query.eq("is_featured", true);
-      }
+          if (featured) {
+            query = query.eq("is_featured", true);
+          }
 
-      if (specialization) {
-        query = query.contains("specializations", [specialization]);
-      }
+          if (specialization) {
+            query = query.contains("specializations", [specialization]);
+          }
 
-      const { data, error } = await query;
-
-      if (error) throw error;
-      return data as TeacherProfileWithUser[];
+          const { data, error } = await query;
+          if (error) throw error;
+          return data as TeacherProfileWithUser[];
+        },
+        MOCK_TEACHERS.filter(t => {
+          if (featured && !t.is_featured) return false;
+          if (specialization && !t.specializations.includes(specialization)) return false;
+          return true;
+        }).slice(0, limit) as TeacherProfileWithUser[],
+        "useTeachers"
+      );
     },
   });
 }
@@ -53,17 +63,23 @@ export function useTeacher(teacherId: string | undefined) {
     queryFn: async (): Promise<TeacherProfileWithUser | null> => {
       if (!teacherId) return null;
 
-      const { data, error } = await supabase
-        .from("teacher_profiles")
-        .select(`
-          *,
-          profiles (*)
-        `)
-        .eq("id", teacherId)
-        .single();
+      return withMockFallback(
+        async () => {
+          const { data, error } = await supabase
+            .from("teacher_profiles")
+            .select(`
+              *,
+              profiles (*)
+            `)
+            .eq("id", teacherId)
+            .single();
 
-      if (error) throw error;
-      return data as TeacherProfileWithUser;
+          if (error) throw error;
+          return data as TeacherProfileWithUser;
+        },
+        MOCK_TEACHERS.find(t => t.id === teacherId) as TeacherProfileWithUser | null,
+        "useTeacher"
+      );
     },
     enabled: !!teacherId,
   });
