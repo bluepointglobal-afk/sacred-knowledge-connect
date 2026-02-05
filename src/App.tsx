@@ -24,6 +24,8 @@ import TeacherEarnings from "./pages/TeacherEarnings";
 import BecomeTeacher from "./pages/BecomeTeacher";
 import TeacherCourseNew from "./pages/TeacherCourseNew";
 import TeacherCourseAvailability from "./pages/TeacherCourseAvailability";
+import SmartMatching from "./pages/SmartMatching";
+import Halaqahs from "./pages/Halaqahs";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +41,8 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/matching" element={<Matching />} />
+            <Route path="/smart-matching" element={<SmartMatching />} />
+            <Route path="/halaqahs" element={<Halaqahs />} />
             <Route path="/teachers" element={<Teachers />} />
             <Route path="/teachers/:id" element={<TeacherProfile />} />
             <Route path="/bundles" element={<Bundles />} />
