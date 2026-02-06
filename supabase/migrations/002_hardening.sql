@@ -161,11 +161,7 @@ DROP POLICY IF EXISTS "Students can update own enrollments" ON enrollments;
 CREATE POLICY "Students can update own enrollments"
   ON enrollments FOR UPDATE
   USING (auth.uid() = student_id)
-  WITH CHECK (
-    auth.uid() = student_id
-    -- Students can only pause or cancel, not complete
-    AND (NEW.status IN ('paused', 'cancelled') OR NEW.status = OLD.status)
-  );
+  WITH CHECK (auth.uid() = student_id);
 
 -- Teachers can mark enrollments as completed
 DROP POLICY IF EXISTS "Teachers can complete enrollments" ON enrollments;

@@ -226,6 +226,15 @@ CREATE POLICY "teacher_payouts_update_service" ON teacher_payouts
 -- TRIGGERS
 -- ============================================================================
 
+-- Create helper function for auto-updating timestamps
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Auto-update updated_at on payments
 CREATE TRIGGER update_payments_updated_at
   BEFORE UPDATE ON payments
