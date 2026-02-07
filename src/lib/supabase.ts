@@ -30,6 +30,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // In offline/mock mode, return a lightweight in-memory supabase lookalike.
 // This keeps the rest of the app (hooks/components) working without needing a running Supabase.
-export const supabase: any = shouldUseMockData()
+const useMock = shouldUseMockData();
+console.log('[Supabase Client] Initialization:', {
+  VITE_USE_MOCK_DATA: import.meta.env.VITE_USE_MOCK_DATA,
+  shouldUseMockData: useMock,
+  mode: useMock ? 'MOCK' : 'REAL',
+  supabaseUrl,
+});
+
+export const supabase: any = useMock
   ? createMockSupabaseClient()
   : createClient<Database>(supabaseUrl, supabaseAnonKey);

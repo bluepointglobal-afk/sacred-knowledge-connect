@@ -23,6 +23,7 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Offline from "./pages/Offline";
 import TeacherEarnings from "./pages/TeacherEarnings";
+import EscrowDashboard from "./pages/EscrowDashboard";
 import BecomeTeacher from "./pages/BecomeTeacher";
 import TeacherCourseNew from "./pages/TeacherCourseNew";
 import TeacherCourseAvailability from "./pages/TeacherCourseAvailability";
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/teacher/courses/new" element={<TeacherCourseNew />} />
             <Route path="/teacher/courses/:id/availability" element={<TeacherCourseAvailability />} />
             <Route path="/teacher/earnings" element={<TeacherEarnings />} />
+            <Route path="/escrow" element={<EscrowDashboard />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />

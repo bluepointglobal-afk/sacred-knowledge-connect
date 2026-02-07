@@ -237,7 +237,7 @@ export function useBundleCheckout() {
           body: {
             bundle_id: bundleId,
             payment_type: "bundle",
-            success_url: `${window.location.origin}/dashboard/student/enrollments?checkout=success`,
+            success_url: `${window.location.origin}/dashboard?checkout=success`,
             cancel_url: `${window.location.origin}/bundles/${bundleId}?checkout=cancelled`,
           },
         }
@@ -282,7 +282,7 @@ export function useSessionCheckout() {
             scheduled_at: scheduledAt,
             duration_minutes: durationMinutes,
             title,
-            success_url: `${window.location.origin}/dashboard/student/sessions?checkout=success`,
+            success_url: `${window.location.origin}/dashboard?checkout=success`,
             cancel_url: `${window.location.origin}/teachers/${teacherId}?checkout=cancelled`,
           },
         }

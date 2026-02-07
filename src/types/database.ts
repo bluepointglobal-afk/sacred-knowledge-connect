@@ -12,6 +12,11 @@ export type EarningStatus = "pending" | "available" | "paid_out" | "held" | "for
 export type PayoutStatus = "pending" | "processing" | "completed" | "failed";
 export type PaymentType = "session" | "bundle" | "tip";
 
+// Dispute types
+export type DisputeStatus = "open" | "under_review" | "resolved" | "closed";
+export type DisputeReason = "service_not_received" | "unsatisfactory_service" | "billing_error" | "unauthorized_charge" | "other";
+export type DisputeResolution = "favor_client" | "favor_consultant" | "split" | "refunded";
+
 export interface Profile {
   id: string;
   email: string;
@@ -341,6 +346,34 @@ export interface EarningsSummary {
   total_paid_out_cents: number;
 }
 
+// Dispute interfaces
+export interface DisputeEvidence {
+  id: string;
+  type: "document" | "message" | "screenshot" | "other";
+  url: string;
+  description: string;
+  submitted_by: "client" | "consultant" | "admin";
+  submitted_at: string;
+}
+
+export interface Dispute {
+  id: string;
+  payment_id: string;
+  client_id: string;
+  consultant_id: string;
+  status: DisputeStatus;
+  reason: DisputeReason;
+  description: string;
+  evidence: DisputeEvidence[];
+  resolution?: DisputeResolution;
+  resolved_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type DisputeInsert = Omit<Dispute, "id" | "created_at" | "updated_at" | "resolved_at">;
+export type DisputeUpdate = Partial<Omit<Dispute, "id" | "created_at">>;
+
 // Database schema type for Supabase client
 export interface Database {
   public: {
@@ -410,6 +443,11 @@ export interface Database {
         Insert: TeacherPayoutInsert;
         Update: TeacherPayoutUpdate;
       };
+      disputes: {
+        Row: Dispute;
+        Insert: DisputeInsert;
+        Update: DisputeUpdate;
+      };
     };
     Enums: {
       user_role: UserRole;
@@ -420,6 +458,9 @@ export interface Database {
       earning_status: EarningStatus;
       payout_status: PayoutStatus;
       payment_type: PaymentType;
+      dispute_status: DisputeStatus;
+      dispute_reason: DisputeReason;
+      dispute_resolution: DisputeResolution;
     };
   };
 }

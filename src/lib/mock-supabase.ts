@@ -3,6 +3,8 @@ import {
   MOCK_PAYMENTS,
   MOCK_TEACHER_EARNINGS,
   MOCK_TRANSACTIONS,
+  MOCK_TEACHERS,
+  MOCK_BUNDLES,
   generateMockStripeChargeId,
 } from "@/lib/mock-data";
 
@@ -27,24 +29,67 @@ function genId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}_${Date.now()}`;
 }
 
-// Shared in-memory tables (persist for the lifetime of the JS runtime)
-const memory = {
-  payments: clone(MOCK_PAYMENTS),
-  teacher_earnings: clone(MOCK_TEACHER_EARNINGS),
-  transactions: clone(MOCK_TRANSACTIONS),
-};
+// Load or initialize mock database from sessionStorage to persist across page navigations
+function loadOrInitMockDB() {
+  const stored = sessionStorage.getItem('__SACREDCHAIN_MOCK_DB__');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      console.log('[MockSupabase] Restored mock database from sessionStorage');
+      return parsed;
+    } catch (e) {
+      console.warn('[MockSupabase] Failed to parse stored DB, reinitializing:', e);
+    }
+  }
+
+  // Initialize with default mock data
+  const fresh = {
+    payments: clone(MOCK_PAYMENTS),
+    teacher_earnings: clone(MOCK_TEACHER_EARNINGS),
+    transactions: clone(MOCK_TRANSACTIONS),
+    teacher_profiles: clone(MOCK_TEACHERS),
+    bundles: clone(MOCK_BUNDLES),
+  };
+
+  console.log('[MockSupabase] Initialized fresh mock database with', {
+    teachers: fresh.teacher_profiles.length,
+    bundles: fresh.bundles.length,
+    payments: fresh.payments.length,
+  });
+
+  return fresh;
+}
+
+// Shared in-memory tables (persist across page navigations via sessionStorage)
+const memory = loadOrInitMockDB();
+
+// Save to sessionStorage whenever it changes
+function persistMockDB() {
+  try {
+    sessionStorage.setItem('__SACREDCHAIN_MOCK_DB__', JSON.stringify(memory));
+  } catch (e) {
+    console.warn('[MockSupabase] Failed to persist DB to sessionStorage:', e);
+  }
+}
 
 // Expose for Playwright E2E assertions in offline mode.
 // (Only exists in the browser bundle when VITE_USE_MOCK_DATA=true.)
 (globalThis as any).__SACREDCHAIN_MOCK_DB__ = memory;
 
-type Filter = { col: string; op: "eq" | "neq"; value: any };
+type Filter = { col: string; op: "eq" | "neq" | "contains"; value: any };
 
 function applyFilters<T extends AnyRow>(rows: T[], filters: Filter[]): T[] {
   return rows.filter((r) =>
     filters.every((f) => {
       if (f.op === "eq") return r[f.col] === f.value;
       if (f.op === "neq") return r[f.col] !== f.value;
+      if (f.op === "contains") {
+        // For array columns, check if the row's array contains all values in the filter array
+        const rowVal = r[f.col];
+        const filterVal = Array.isArray(f.value) ? f.value : [f.value];
+        if (!Array.isArray(rowVal)) return false;
+        return filterVal.every((v: any) => rowVal.includes(v));
+      }
       return true;
     })
   );
@@ -70,6 +115,8 @@ function enhanceSelect(table: string, rows: AnyRow[], selectStr?: string | null)
   const wantsStudent = selectStr.includes("student:");
   const wantsTeacher = selectStr.includes("teacher:");
   const wantsPayment = selectStr.includes("payment:");
+  const wantsProfiles = selectStr.includes("profiles");
+  const wantsTeacherProfiles = selectStr.includes("teacher_profiles");
 
   return rows.map((r) => {
     const out: AnyRow = { ...r };
@@ -95,6 +142,20 @@ function enhanceSelect(table: string, rows: AnyRow[], selectStr?: string | null)
       out.payment = memory.payments.find((p) => p.stripe_charge_id === r.stripe_charge_id) ?? null;
     }
 
+    // Handle teacher_profiles -> profiles join
+    if (table === "teacher_profiles" && wantsProfiles && r.profiles) {
+      // Profiles are already embedded in MOCK_TEACHERS, keep them as-is
+      out.profiles = r.profiles;
+    }
+
+    // Handle bundles -> teacher_profiles join
+    if (table === "bundles" && wantsTeacherProfiles) {
+      const teacher = memory.teacher_profiles.find((t: AnyRow) => t.id === r.teacher_id);
+      if (teacher) {
+        out.teacher_profiles = teacher;
+      }
+    }
+
     return out;
   });
 }
@@ -103,6 +164,7 @@ class MockQueryBuilder {
   private table: string;
   private filters: Filter[] = [];
   private orderBy: { col: string; ascending: boolean } | null = null;
+  private limitCount: number | null = null;
   private pendingInsert: AnyRow | AnyRow[] | null = null;
   private pendingUpdate: AnyRow | null = null;
   private selectStr: string | null = null;
@@ -133,6 +195,16 @@ class MockQueryBuilder {
 
   neq(col: string, value: any) {
     this.filters.push({ col, op: "neq", value });
+    return this;
+  }
+
+  contains(col: string, value: any) {
+    this.filters.push({ col, op: "contains", value });
+    return this;
+  }
+
+  limit(count: number) {
+    this.limitCount = count;
     return this;
   }
 
@@ -186,6 +258,7 @@ class MockQueryBuilder {
 
       // Persist
       (memory as any)[t].push(...inserted);
+      persistMockDB(); // Persist to sessionStorage
 
       const out = enhanceSelect(t, inserted, this.selectStr);
       return { data: (Array.isArray(this.pendingInsert) ? out : out[0]) as any, error: null };
@@ -196,6 +269,7 @@ class MockQueryBuilder {
       const current = (memory as any)[t] as AnyRow[];
       const matches = applyFilters(current, this.filters);
       matches.forEach((row) => Object.assign(row, this.pendingUpdate));
+      persistMockDB(); // Persist to sessionStorage
       const out = enhanceSelect(t, matches, this.selectStr);
       return { data: out as any, error: null };
     }
@@ -204,7 +278,8 @@ class MockQueryBuilder {
     const current = (memory as any)[t] as AnyRow[];
     const filtered = applyFilters(current, this.filters);
     const ordered = applyOrder(filtered, this.orderBy);
-    const out = enhanceSelect(t, ordered, this.selectStr);
+    const limited = this.limitCount ? ordered.slice(0, this.limitCount) : ordered;
+    const out = enhanceSelect(t, limited, this.selectStr);
     return { data: out as any, error: null };
   }
 }
@@ -263,6 +338,10 @@ export function createMockSupabaseClient() {
             timestamp: nowIso(),
             status: "succeeded",
           });
+
+          // Persist changes to sessionStorage
+          persistMockDB();
+          console.log('[MockSupabase] Created mock checkout session, persisted to sessionStorage');
 
           const successUrl = body.success_url ?? `${globalThis.location?.origin ?? ""}/?checkout=success`;
           const url = `${successUrl}${successUrl.includes("?") ? "&" : "?"}mockStripe=1`;

@@ -39,10 +39,15 @@ test.describe('Payment Flow (offline mock)', () => {
     await page.getByRole('option', { name: '09:00' }).click();
 
     // Pay (this triggers mock functions.invoke('create-checkout-session'))
-    await page.getByRole('button', { name: /pay/i }).click();
+    const payButton = page.getByRole('button', { name: /pay/i });
+    await expect(payButton).toBeEnabled();
+    await payButton.click();
 
-    // Should redirect to success_url with checkout=success
-    await expect(page).toHaveURL(/checkout=success/);
+    // Wait for redirect to success URL
+    await page.waitForURL(/checkout=success/, { timeout: 10000 });
+
+    // Wait a moment for the page to fully load and initialize
+    await page.waitForTimeout(500);
 
     // Assert mock DB received records
     const db = await page.evaluate(() => (window as any).__SACREDCHAIN_MOCK_DB__);
