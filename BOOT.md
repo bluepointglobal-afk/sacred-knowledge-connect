@@ -40,3 +40,16 @@ Before any Phase 3 or 4 task:
 3. If "no tab connected" → run: openclaw browser open <url>
 4. If still failing after 2 attempts → skip Phase 4, continue with next project's Phase 1/2
 5. NEVER escalate browser issues to Architect. Fix it or skip it.
+
+## Browser Commands (MANAGED MODE — no manual clicks needed)
+Use --browser-profile openclaw for ALL browser commands:
+- Navigate: openclaw browser --browser-profile openclaw navigate <url>
+- Snapshot: openclaw browser --browser-profile openclaw snapshot
+- Screenshot: openclaw browser --browser-profile openclaw screenshot
+- Click: openclaw browser --browser-profile openclaw click <ref>
+- Type: openclaw browser --browser-profile openclaw type <ref> "text"
+
+Start browser before use:
+  openclaw browser --browser-profile openclaw start
+
+NEVER use extension relay (profile "chrome"). Always use managed mode.

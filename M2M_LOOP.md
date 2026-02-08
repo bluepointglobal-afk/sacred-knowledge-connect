@@ -340,3 +340,83 @@ Now: Dave orchestrates. Each tool does ONE job reliably.
 - Telegram notifies (simple, reliable)
 
 Dave's job is to call the right tool at the right phase. Not to BE all the tools.
+
+---
+
+## PHASE 4 GOLDEN PATH (MANDATORY)
+
+Phase 4 is NOT a landing page review. It is a FULL PRODUCT WALK.
+
+The SME persona must complete the ENTIRE user journey — signup to core value delivery. If a step is broken or missing, that's a Phase 2 finding.
+
+### Golden Path Definition Per Project
+
+Before running Phase 4 on any project, define the golden path:
+"What does a paying user DO with this product, step by step?"
+
+Then walk every step. Screenshot every step. If you can't complete a step, document WHY in the feedback matrix.
+
+### Example Golden Paths
+
+**Noorstudio (AI Children's Books):**
+1. Sign up / create account
+2. Create character universe / knowledge base
+3. Add characters with descriptions
+4. Generate story from template
+5. Preview illustrated book with consistent characters
+6. Export PDF
+7. Every step screenshotted. Every failure documented.
+
+**AFAQ (ESG Reporting):**
+1. Sign up / create company profile
+2. Select reporting framework (GRI/SASB/TCFD)
+3. Run compliance gap assessment
+4. View compliance score / dashboard
+5. Generate full disclosure report
+6. Export report (PDF/KDP)
+7. Every step screenshotted. Every failure documented.
+
+**NikahX (Islamic Matrimonial):**
+1. Sign up / create profile
+2. Add photos, bio, preferences
+3. Set Islamic criteria (sect, practice level)
+4. Browse/filter matches
+5. Send interest / message
+6. Every step screenshotted. Every failure documented.
+
+**Mawashi (Livestock Marketplace):**
+1. Sign up as buyer or seller
+2. Create livestock listing (seller)
+3. Browse listings with filters (buyer)
+4. Contact seller / negotiate
+5. Complete transaction
+6. Every step screenshotted. Every failure documented.
+
+**Sacredchain (Islamic Learning):**
+1. Sign up as student
+2. Browse courses / teachers
+3. Enroll in course
+4. Access learning content
+5. Complete lesson / track progress
+6. Verify escrow payment flow
+7. Every step screenshotted. Every failure documented.
+
+**Petdate (Pet Dating):**
+1. Sign up / create pet profile
+2. Add pet photos and details
+3. Set preferences / compatibility criteria
+4. Browse matches
+5. Send interest / connect
+6. Every step screenshotted. Every failure documented.
+
+### Scoring After Golden Path
+
+Only score WOULD PAY / WOULD EXPLORE / WOULD BOUNCE after completing the golden path, not after seeing the homepage.
+
+If golden path breaks at step 2, the verdict is WOULD BOUNCE with feedback: "Product is not functional beyond signup."
+
+### Greenfield vs Brownfield Golden Path
+
+**Brownfield:** Walk the existing golden path. Document what works and what's broken.
+
+**Greenfield:** If golden path doesn't exist yet (no signup, no core feature), Phase 4 verdict is automatic: WOULD BOUNCE — route back to Phase 2 to build the core flow first. Don't waste time SME-evaluating a landing page.

@@ -19,10 +19,10 @@
   - Fix 1: Changed 'unlisted' → 'non-listed' in listingStatus (commit c435d8d)
   - Fix 2: Added country name mapping utility for jurisdiction codes (commit 4344676)
   - Both commits in GitHub main branch
-  - [ ] **CRITICAL BLOCKER:** Vercel not auto-deploying from GitHub
-    - Production deployment still 1h old (before both fixes)
-    - GitHub→Vercel integration broken
-    - Needs Architect to fix integration OR manually redeploy from dashboard
+  - [x] **RESOLVED:** Deployed via `vercel --prod` CLI (2026-02-08 09:51 PST)
+    - `afaq-esg-navigator.vercel.app/sample-report` → 200 OK ✅
+    - Note: `afaq-esg.vercel.app` is a different/old Vercel project (still 404)
+    - Architect may want to alias `afaq-esg.vercel.app` → navigator project
 
 ### Mawashi
 - [x] Complete landing page MVP
