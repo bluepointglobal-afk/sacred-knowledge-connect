@@ -1,6 +1,4 @@
 #!/bin/bash
-# Universal deploy script for Dave
-# Usage: bash deploy.sh <project-folder-name>
 REPO="$HOME/.openclaw/workspace/03_REPOS/$1"
 if [ ! -d "$REPO" ]; then echo "❌ Repo not found: $1"; exit 1; fi
 cd "$REPO"
