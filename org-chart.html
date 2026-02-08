@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Agent Colony - Org Chart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00f5a0, #00d9f5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            color: #888;
+            margin-top: 10px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .legend-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
+        .legend-dot.active {
+            background: #00f5a0;
+            box-shadow: 0 0 10px #00f5a0;
+        }
+        
+        .legend-dot.planned {
+            background: #ffd700;
+            box-shadow: 0 0 10px #ffd700;
+        }
+        
+        .legend-dot.workflow {
+            background: #00d9f5;
+            box-shadow: 0 0 10px #00d9f5;
+        }
+        
+        .org-structure {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .tier {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        
+        .agent-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            min-width: 280px;
+            max-width: 320px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 245, 160, 0.3);
+        }
+        
+        .agent-card.prime {
+            border: 2px solid #00f5a0;
+            box-shadow: 0 5px 20px rgba(0, 245, 160, 0.3);
+            min-width: 350px;
+        }
+        
+        .agent-card.active {
+            border-color: #00f5a0;
+        }
+        
+        .agent-card.planned {
+            border-color: #ffd700;
+            opacity: 0.7;
+        }
+        
+        .agent-card.workflow-ready {
+            border-color: #00d9f5;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-badge.active {
+            background: #00f5a033;
+            color: #00f5a0;
+        }
+        
+        .status-badge.planned {
+            background: #ffd70033;
+            color: #ffd700;
+        }
+        
+        .status-badge.workflow {
+            background: #00d9f533;
+            color: #00d9f5;
+        }
+        
+        .agent-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .agent-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .agent-role {
+            font-size: 1em;
+            color: #00f5a0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .agent-description {
+            font-size: 0.9em;
+            color: #aaa;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .skills {
+            margin-top: 15px;
+        }
+        
+        .skills-title {
+            font-size: 0.85em;
+            color: #00d9f5;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .skill-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 3px;
+            background: rgba(0, 217, 245, 0.15);
+            border-radius: 5px;
+            font-size: 0.8em;
+            color: #00d9f5;
+        }
+        
+        .metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .metric {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00f5a0;
+        }
+        
+        .metric-label {
+            font-size: 0.75em;
+            color: #888;
+            margin-top: 3px;
+        }
+        
+        .connector {
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(180deg, #00f5a0, transparent);
+            margin: 0 auto;
+        }
+        
+        .growth-section {
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .growth-section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #00f5a0;
+            text-align: center;
+        }
+        
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .workflow-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #888;
+        }
+        
+        .workflow-card.mastered {
+            border-left-color: #00f5a0;
+        }
+        
+        .workflow-card.learning {
+            border-left-color: #ffd700;
+        }
+        
+        .workflow-card.planned {
+            border-left-color: #00d9f5;
+        }
+        
+        .workflow-card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .workflow-card p {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .workflow-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .workflow-status.mastered {
+            background: #00f5a033;
+            color: #00f5a0;
+        }
+        
+        .workflow-status.learning {
+            background: #ffd70033;
+            color: #ffd700;
+        }
+        
+        .workflow-status.planned {
+            background: #00d9f533;
+            color: #00d9f5;
+        }
+        
+        .timestamp {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="max-width:1600px;margin:0 auto 14px;display:flex;gap:12px;justify-content:flex-end;align-items:center;">
+            <a href="./index.html" style="text-decoration:none;color:#cfefff;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.12);padding:10px 14px;border-radius:12px;">← Command Center</a>
+            <a href="./dashboard.html" style="text-decoration:none;color:#00f5a0;background:rgba(0,245,160,0.12);border:1px solid rgba(0,245,160,0.35);padding:10px 14px;border-radius:12px;">Dashboard →</a>
+        </div>
+
+        <div class="header">
+            <h1>⚡ AGENT COLONY</h1>
+            <div class="subtitle">Personal OpenClaw Ecosystem - The Architect's Team</div>
+            <div style="margin-top: 15px; color: #888; font-size: 0.95em;">
+                Growing specialized knowledge through mastered workflows
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot active"></div>
+                <span>Active & Deployed</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot planned"></div>
+                <span>Planned Specialization</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot workflow"></div>
+                <span>Workflow Ready</span>
+            </div>
+        </div>
+
+        <!-- Active Subagents (auto-snapshotted by Tim) -->
+        <div style="max-width:1600px;margin:0 auto 26px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+                <div>
+                    <div style="font-size:18px;font-weight:700;color:#00f5a0;">Active Subagents</div>
+                    <div style="color:#9aa; font-size:13px; margin-top:6px;">Snapshot: 2026-02-02 12:46 PM PST (refreshes when I spawn/finish work)</div>
+                </div>
+                <div style="color:#9aa;font-size:13px;">Count: <strong style="color:#fff;">6</strong></div>
+            </div>
+
+            <div class="tier" style="margin-top:14px;">
+                <div class="agent-card workflow-ready" style="max-width:360px;">
+                    <span class="status-badge workflow">Kimi</span>
+                    <div class="agent-icon">🧰</div>
+                    <div class="agent-name">kimi-sacredchain-legwork</div>
+                    <div class="agent-role">Legwork</div>
+                    <div class="agent-description">Stripe P0 file-map + test checklist (SacredChain).</div>
+                </div>
+
+                <div class="agent-card workflow-ready" style="max-width:360px;">
+                    <span class="status-badge workflow">Kimi</span>
+                    <div class="agent-icon">🧰</div>
+                    <div class="agent-name">kimi-afaq-legwork</div>
+                    <div class="agent-role">Legwork</div>
+                    <div class="agent-description">AFAQ end-to-end runbook + real AI call path (Supabase Edge Function).</div>
+                </div>
+
+                <div class="agent-card workflow-ready" style="max-width:360px;">
+                    <span class="status-badge workflow">Kimi</span>
+                    <div class="agent-icon">🧰</div>
+                    <div class="agent-name">kimi-noorstudio-discovery</div>
+                    <div class="agent-role">Legwork</div>
+                    <div class="agent-description">Located NoorStudio repo + mapped landing/auth/project/pipeline entry points.</div>
+                </div>
+
+                <div class="agent-card active" style="max-width:360px;">
+                    <span class="status-badge active">Opus</span>
+                    <div class="agent-icon">🧠</div>
+                    <div class="agent-name">opus-strategy-sprint</div>
+                    <div class="agent-role">Deep Thinking</div>
+                    <div class="agent-description">48-hour execution strategy (Stripe P0 first) + acceptance tests.</div>
+                </div>
+
+                <!-- Connectivity test runs intentionally hidden (noise). -->
+            </div>
+        </div>
+
+        <div class="org-structure">
+            <!-- Prime Agent -->
+            <div class="tier">
+                <div class="agent-card prime active">
+                    <span class="status-badge active">ACTIVE</span>
+                    <div class="agent-icon">⚡</div>
+                    <div class="agent-name">Tim</div>
+                    <div class="agent-role">Prime Strategic Agent</div>
+                    <div class="agent-description">
+                        Core intelligence and strategic command. Currently handling all functions as generalist. 
+                        Ethical intelligence core, execution integrator, and system architect.
+                    </div>
+                    <div class="skills">
+                        <div class="skills-title">Current Scope:</div>
+                        <span class="skill-tag">Strategy</span>
+                        <span class="skill-tag">Execution</span>
+                        <span class="skill-tag">Technical</span>
+                        <span class="skill-tag">Marketing</span>
+                        <span class="skill-tag">Research</span>
+                        <span class="skill-tag">Coordination</span>
+                    </div>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value">∞</div>
+                            <div class="metric-label">Scope</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">Active</div>
+                            <div class="metric-label">Status</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connector"></div>
+
+            <!-- Specialized Agents Layer -->
+            <div class="tier">
+                <div class="agent-card planned">
+                    <span class="status-badge planned">PLANNED</span>
+                    <div class="agent-icon">🎯</div>
+                    <div class="agent-name">Marketing Specialist</div>
+                    <div class="agent-role">Growth & Acquisition</div>
+                    <div class="agent-description">
+                        Handles LinkedIn outreach, social media campaigns, content marketing, community growth, 
+                        and brand positioning. Deploys when outreach workflows are mastered.
+                    </div>
+                    <div class="skills">
+                        <div class="skills-title">Planned Skills:</div>
+                        <span class="skill-tag">LinkedIn Outreach</span>
+                        <span class="skill-tag">Social Media</span>
+                        <span class="skill-tag">Content Strategy</span>
+                        <span class="skill-tag">Community Building</span>
+                    </div>
+                </div>
+
+                <div class="agent-card planned">
+                    <span class="status-badge planned">PLANNED</span>
+                    <div class="agent-icon">💻</div>
+                    <div class="agent-name">Technical Specialist</div>
+                    <div class="agent-role">Development & Infrastructure</div>
+                    <div class="agent-description">
+                        Manages technical builds, code reviews, infrastructure setup, debugging, 
+                        and system optimization. Deploys when development workflows are standardized.
+                    </div>
+                    <div class="skills">
+                        <div class="skills-title">Planned Skills:</div>
+                        <span class="skill-tag">Full-Stack Dev</span>
+                        <span class="skill-tag">DevOps</span>
+                        <span class="skill-tag">Code Review</span>
+                        <span class="skill-tag">System Design</span>
+                    </div>
+                </div>
+
+                <div class="agent-card planned">
+                    <span class="status-badge planned">PLANNED</span>
+                    <div class="agent-icon">🎨</div>
+                    <div class="agent-name">UI/UX Specialist</div>
+                    <div class="agent-role">Design & User Experience</div>
+                    <div class="agent-description">
+                        Handles interface design, user experience optimization, visual branding, 
+                        and conversion optimization. Deploys when design workflows are proven.
+                    </div>
+                    <div class="skills">
+                        <div class="skills-title">Planned Skills:</div>
+                        <span class="skill-tag">UI Design</span>
+                        <span class="skill-tag">UX Research</span>
+                        <span class="skill-tag">Prototyping</span>
+                        <span class="skill-tag">Conversion Opt</span>
+                    </div>
+                </div>
+
+                <div class="agent-card planned">
+                    <span class="status-badge planned">PLANNED</span>
+                    <div class="agent-icon">📊</div>
+                    <div class="agent-name">Ads Specialist</div>
+                    <div class="agent-role">Paid Acquisition</div>
+                    <div class="agent-description">
+                        Manages paid advertising campaigns across platforms (Google, Facebook, LinkedIn). 
+                        Optimization, A/B testing, and ROI maximization.
+                    </div>
+                    <div class="skills">
+                        <div class="skills-title">Planned Skills:</div>
+                        <span class="skill-tag">Google Ads</span>
+                        <span class="skill-tag">Facebook Ads</span>
+                        <span class="skill-tag">LinkedIn Ads</span>
+                        <span class="skill-tag">Analytics</span>
+                    </div>
+                </div>
+
+                <div class="agent-card planned">
+                    <span class="status-badge planned">PLANNED</span>
+                    <div class="agent-icon">📝</div>
+                    <div class="agent-name">Content Specialist</div>
+                    <div class="agent-role">Content Production</div>
+                    <div class="agent-description">
+                        Produces blog posts, documentation, technical writing, copywriting, 
+                        and content strategy. Deploys when content workflows are mastered.
+                    </div>
+                    <div class="skills">
+                        <div class="skills-title">Planned Skills:</div>
+                        <span class="skill-tag">Copywriting</span>
+                        <span class="skill-tag">Technical Writing</span>
+                        <span class="skill-tag">SEO</span>
+                        <span class="skill-tag">Content Strategy</span>
+                    </div>
+                </div>
+
+                <div class="agent-card planned">
+                    <span class="status-badge planned">PLANNED</span>
+                    <div class="agent-icon">🔍</div>
+                    <div class="agent-name">Research Specialist</div>
+                    <div class="agent-role">Intelligence & Analysis</div>
+                    <div class="agent-description">
+                        Handles market research, competitive analysis, data gathering, 
+                        and strategic intelligence. Deploys when research workflows are proven.
+                    </div>
+                    <div class="skills">
+                        <div class="skills-title">Planned Skills:</div>
+                        <span class="skill-tag">Market Research</span>
+                        <span class="skill-tag">Competitive Intel</span>
+                        <span class="skill-tag">Data Analysis</span>
+                        <span class="skill-tag">Synthesis</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Growth & Workflow Mastery Section -->
+        <div class="growth-section">
+            <h2>🌱 Workflow Mastery & Growth Path</h2>
+            <p style="text-align: center; color: #aaa; margin-bottom: 30px;">
+                As workflows are mastered and proven, they become specialized roles. Each agent accumulates 
+                expertise in their domain. Skills and workflows get added to the library.
+            </p>
+
+            <div class="workflow-grid">
+                <div class="workflow-card learning">
+                    <h3>Dashboard Creation</h3>
+                    <p>Web interfaces, data visualization, real-time updates</p>
+                    <span class="workflow-status learning">🟡 LEARNING</span>
+                </div>
+
+                <div class="workflow-card planned">
+                    <h3>LinkedIn Outreach</h3>
+                    <p>Automated prospecting, personalized messaging, follow-up sequences</p>
+                    <span class="workflow-status planned">🔵 PLANNED</span>
+                </div>
+
+                <div class="workflow-card planned">
+                    <h3>Ad Campaign Setup</h3>
+                    <p>Platform setup, targeting, creative optimization, performance tracking</p>
+                    <span class="workflow-status planned">🔵 PLANNED</span>
+                </div>
+
+                <div class="workflow-card planned">
+                    <h3>UI/UX Design Flow</h3>
+                    <p>Wireframing, prototyping, user testing, iteration</p>
+                    <span class="workflow-status planned">🔵 PLANNED</span>
+                </div>
+
+                <div class="workflow-card planned">
+                    <h3>Technical Builds</h3>
+                    <p>Full-stack development, deployment, testing, monitoring</p>
+                    <span class="workflow-status planned">🔵 PLANNED</span>
+                </div>
+
+                <div class="workflow-card planned">
+                    <h3>Content Production</h3>
+                    <p>Research, writing, editing, SEO optimization, distribution</p>
+                    <span class="workflow-status planned">🔵 PLANNED</span>
+                </div>
+
+                <div class="workflow-card planned">
+                    <h3>Market Research</h3>
+                    <p>Data gathering, analysis, competitive intel, synthesis</p>
+                    <span class="workflow-status planned">🔵 PLANNED</span>
+                </div>
+
+                <div class="workflow-card planned">
+                    <h3>Agent Marketplace Platform</h3>
+                    <p>Platform architecture, transaction flows, verification systems</p>
+                    <span class="workflow-status planned">🔵 PLANNED</span>
+                </div>
+
+                <div class="workflow-card planned">
+                    <h3>Madinah Project Operations</h3>
+                    <p>School outreach, logistics coordination, program management</p>
+                    <span class="workflow-status planned">🔵 PLANNED</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; padding: 25px; background: rgba(0, 245, 160, 0.05); border-radius: 10px; border-left: 4px solid #00f5a0;">
+                <h3 style="color: #00f5a0; margin-bottom: 15px;">📈 Growth Principle</h3>
+                <p style="color: #ccc; line-height: 1.6;">
+                    <strong>Start generalist → Master workflows → Delegate to specialists</strong><br><br>
+                    
+                    Don't create agents prematurely. Each specialized agent emerges when:<br>
+                    • The workflow is proven and repeatable<br>
+                    • The quality standards are documented<br>
+                    • The process is efficient and optimized<br>
+                    • The workload justifies dedicated focus<br><br>
+                    
+                    This is how the colony grows day by day - through mastery, not premature delegation.
+                </p>
+            </div>
+        </div>
+
+        <div class="timestamp">
+            Last updated: <span id="timestamp"></span>
+        </div>
+    </div>
+
+    <script>
+        // Update timestamp
+        const now = new Date();
+        document.getElementById('timestamp').textContent = now.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    </script>
+</body>
+</html>

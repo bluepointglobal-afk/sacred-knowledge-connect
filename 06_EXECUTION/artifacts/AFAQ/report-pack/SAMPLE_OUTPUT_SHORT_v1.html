@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AFAQ ESG — Sample Short Report (v1)</title>
+  <style>
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,system-ui,sans-serif;background:#0b1020;color:#eaf6ff}
+    .wrap{max-width:980px;margin:0 auto;padding:28px 18px 80px}
+    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px;margin:14px 0}
+    h1{margin:0 0 8px;font-size:28px}
+    h2{margin:18px 0 10px;font-size:18px}
+    .muted{color:#a7c2d6;font-size:13px;line-height:1.6}
+    .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7fb6ff}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .box{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:14px}
+    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+    th,td{border-bottom:1px solid rgba(255,255,255,.10);padding:10px 8px;vertical-align:top}
+    th{text-align:left;font-weight:800;color:#cfe6f5}
+    .page-break{break-after:page;page-break-after:always;height:1px}
+    @media print{body{background:#fff;color:#000}.wrap{max-width:none;padding:0}.card{border:0;border-radius:0;padding:0;margin:0}.box{border:1px solid #ddd;background:#fff}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="k">Sample Client</div>
+      <h1>ESG Readiness Snapshot + Draft Report (Short)</h1>
+      <div class="muted"><strong>Company:</strong> Example Logistics Co (UAE) • <strong>Period:</strong> Last 12 months • <strong>Frameworks:</strong> IFRS S1/S2 + TCFD (illustrative)</div>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <div class="box">
+          <div class="k">Overall readiness score</div>
+          <div style="font-size:44px;font-weight:900;margin-top:8px">68</div>
+          <div class="muted">Good baseline. Biggest lift: supplier code + emissions inventory + safety leading indicators.</div>
+        </div>
+        <div class="box">
+          <div class="k">Top gaps (priority)</div>
+          <ul class="muted">
+            <li>Scope 1/2 baseline not documented (methodology + sources)</li>
+            <li>No supplier ESG policy / code of conduct</li>
+            <li>H&S reporting inconsistent across sites</li>
+            <li>Governance: ESG ownership not defined at exec level</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Governance (draft)</h2>
+      <div class="muted">
+        The company currently manages sustainability topics across operations, finance, and HSE without a formally assigned executive owner.
+        For audit-friendly governance, we recommend appointing a named ESG owner, defining cadence (monthly ops review + quarterly board review), and maintaining an evidence register.
+      </div>
+      <h2>Strategy (draft)</h2>
+      <div class="muted">
+        Sustainability priorities are driven primarily by client questionnaires and procurement requirements. A formal materiality assessment is not yet documented.
+        A 90‑day sprint can establish a baseline emissions inventory and supplier policy, enabling credible disclosures.
+      </div>
+      <h2>Risk Management (draft)</h2>
+      <div class="muted">
+        Key risks include climate transition requirements from clients, supply chain compliance gaps, and incomplete safety leading indicators.
+        We recommend a simple risk register with owners, controls, and quarterly review.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Metrics & Targets (illustrative)</h2>
+      <table>
+        <tr><th>Metric</th><th>Value</th><th>Unit</th><th>Source</th><th>Notes</th></tr>
+        <tr><td>Scope 2 emissions</td><td>Not available</td><td>tCO2e</td><td>—</td><td>Requires electricity bills / kWh totals</td></tr>
+        <tr><td>Recordable incident rate</td><td>Not available</td><td>rate</td><td>—</td><td>Requires consistent site reporting</td></tr>
+        <tr><td>Supplier code adoption</td><td>0</td><td>%</td><td>Policy review</td><td>Policy not yet issued</td></tr>
+      </table>
+      <div class="muted" style="margin-top:10px"><strong>Important:</strong> This sample intentionally shows “Not available” to demonstrate audit-friendly handling of missing data.</div>
+    </div>
+
+    <div class="card">
+      <h2>48-hour / 30-60-90 plan</h2>
+      <table>
+        <tr><th>Horizon</th><th>Actions</th><th>Output</th></tr>
+        <tr><td>48 hours</td><td>Intake + evidence capture; establish evidence register; define outline</td><td>Draft narrative sections + missing-data list</td></tr>
+        <tr><td>30 days</td><td>Appoint ESG owner; start emissions inventory; launch supplier code draft</td><td>Governance charter + inventory workbook</td></tr>
+        <tr><td>60 days</td><td>Collect safety leading indicators; finalize policy set</td><td>KPI tables + policy pack</td></tr>
+        <tr><td>90 days</td><td>Publish first external-ready report + questionnaire mapping</td><td>Client-ready PDF + appendix</td></tr>
+      </table>
+    </div>
+
+  </div>
+</body>
+</html>

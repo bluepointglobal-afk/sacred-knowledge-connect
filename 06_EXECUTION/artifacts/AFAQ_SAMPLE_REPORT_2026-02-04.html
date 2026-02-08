@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainability Report 2024 - Emirates Green Energy LLC</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #64748b;
+            --accent: #2563eb;
+            --bg: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+        header {
+            text-align: center;
+            padding-bottom: 40px;
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--primary);
+        }
+        .company-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+        .company-name-arabic {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-top: 8px;
+        }
+        .report-meta {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: var(--secondary);
+        }
+        .score-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), #1d4ed8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            margin-top: 25px;
+            font-size: 1.2rem;
+        }
+        .score-badge strong {
+            font-size: 2rem;
+            display: block;
+        }
+
+        .report-section {
+            margin: 50px 0;
+            padding: 30px;
+            background: #fafafa;
+            border-radius: 12px;
+            border-left: 4px solid var(--section-color, var(--primary));
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .section-icon {
+            font-size: 2rem;
+        }
+        .section-header h2 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        .title-arabic {
+            margin: 5px 0 0;
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+        .narrative p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .metric-code {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--secondary);
+        }
+        .metric-name {
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+        .metric-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .metric-unit {
+            font-size: 0.8rem;
+            font-weight: normal;
+            color: var(--secondary);
+        }
+
+        .disclosures-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        .disclosures-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        .disclosure-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .disclosure-tag {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: var(--text);
+        }
+        .disclosure-tag.addressed { background: #d1fae5; color: #065f46; }
+        .disclosure-tag.partial { background: #fef3c7; color: #92400e; }
+        .disclosure-tag.omitted { background: #fee2e2; color: #991b1b; }
+
+        .disclosure-stats {
+            margin: 50px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+        }
+        .disclosure-stats h2 {
+            margin: 0 0 20px;
+            color: var(--primary);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+        }
+        .stat-card.addressed { border-bottom: 3px solid var(--success); }
+        .stat-card.partial { border-bottom: 3px solid var(--warning); }
+        .stat-card.omitted { border-bottom: 3px solid var(--danger); }
+        .stat-card.total { border-bottom: 3px solid var(--accent); }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-annex {
+            margin: 50px 0;
+        }
+        .data-annex h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .annex-intro {
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+        .annex-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .annex-table th, .annex-table td {
+            padding: 12px 10px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+        .annex-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+        }
+        .annex-table code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .value-cell {
+            text-align: right;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--secondary);
+            font-size: 0.85rem;
+        }
+        footer p { margin: 5px 0; }
+
+        @media print {
+            body { padding: 20px; }
+            .report-section { break-inside: avoid; }
+            .data-annex { break-before: page; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="company-name">Emirates Green Energy LLC</h1>
+        <p class="company-name-arabic">الإمارات للطاقة الخضراء ذ.م.م</p>
+        <div class="report-meta">
+            Sustainability Report 2024 • undefined
+        </div>
+        <div class="score-badge">
+            <strong>100%</strong>
+            ESG Disclosure Score
+        </div>
+    </header>
+
+    
+      <section class="report-section" style="--section-color: #475569">
+        <div class="section-header">
+          <span class="section-icon">📋</span>
+          <div>
+            <h2>Executive Summary</h2>
+            
+          </div>
+        </div>
+        <div class="narrative">
+          <p>Emirates Green Energy LLC has achieved an overall ESG compliance score of 72% based on the assessment conducted. This indicates a moderate level of ESG governance and disclosure readiness. </p><p>The strongest performance area is Governance (78%), while ESG (68%) presents the greatest opportunity for improvement. </p><p>The assessment identified 8 compliance gaps, including 2 critical gaps requiring immediate attention. Detailed recommendations are provided in the respective sections below.</p>
+        </div>
+        
+      <div class="metrics-grid">
+        
+          <div class="metric-card">
+            <div class="metric-code">GOVERNANCE</div>
+            <div class="metric-name">Governance Score</div>
+            <div class="metric-value">78 <span class="metric-unit">%</span></div>
+          </div>
+        
+          <div class="metric-card">
+            <div class="metric-code">ESG</div>
+            <div class="metric-name">ESG Score</div>
+            <div class="metric-value">68 <span class="metric-unit">%</span></div>
+          </div>
+        
+          <div class="metric-card">
+            <div class="metric-code">RISK_CONTROLS</div>
+            <div class="metric-name">Risk & Controls Score</div>
+            <div class="metric-value">75 <span class="metric-unit">%</span></div>
+          </div>
+        
+          <div class="metric-card">
+            <div class="metric-code">TRANSPARENCY</div>
+            <div class="metric-name">Transparency Score</div>
+            <div class="metric-value">70 <span class="metric-unit">%</span></div>
+          </div>
+        
+      </div>
+    
+        
+      </section>
+    
+      <section class="report-section" style="--section-color: #059669">
+        <div class="section-header">
+          <span class="section-icon">🌿</span>
+          <div>
+            <h2>Environmental Performance</h2>
+            
+          </div>
+        </div>
+        <div class="narrative">
+          <p>No specific Environmental disclosures available for this reporting period.</p>
+        </div>
+        
+        
+      <div class="disclosures-section">
+        <h4>Disclosures Addressed</h4>
+        <div class="disclosure-tags">
+          
+            <span class="disclosure-tag addressed">QSE ENV-1</span>
+          
+        </div>
+      </div>
+    
+      </section>
+    
+      <section class="report-section" style="--section-color: #7c3aed">
+        <div class="section-header">
+          <span class="section-icon">👥</span>
+          <div>
+            <h2>Social Responsibility</h2>
+            
+          </div>
+        </div>
+        <div class="narrative">
+          <p>No specific Social disclosures available for this reporting period.</p>
+        </div>
+        
+        
+      <div class="disclosures-section">
+        <h4>Disclosures Addressed</h4>
+        <div class="disclosure-tags">
+          
+            <span class="disclosure-tag addressed">QSE SOC-1</span>
+          
+        </div>
+      </div>
+    
+      </section>
+    
+      <section class="report-section" style="--section-color: #2563eb">
+        <div class="section-header">
+          <span class="section-icon">🏛️</span>
+          <div>
+            <h2>Corporate Governance</h2>
+            
+          </div>
+        </div>
+        <div class="narrative">
+          <p></p><p></p><p></p>
+        </div>
+        
+        
+      <div class="disclosures-section">
+        <h4>Disclosures Addressed</h4>
+        <div class="disclosure-tags">
+          
+            <span class="disclosure-tag addressed">QSE GOV-1</span>
+          
+            <span class="disclosure-tag addressed">QSE GOV-2</span>
+          
+            <span class="disclosure-tag addressed">QSE GOV-3</span>
+          
+        </div>
+      </div>
+    
+      </section>
+    
+      <section class="report-section" style="--section-color: #d97706">
+        <div class="section-header">
+          <span class="section-icon">📖</span>
+          <div>
+            <h2>Methodology & Scope</h2>
+            
+          </div>
+        </div>
+        <div class="narrative">
+          <p>This sustainability report has been prepared in accordance with applicable ESG disclosure requirements for the jurisdiction. The assessment methodology encompasses four key pillars: Governance, Environmental, Social, and Governance (ESG), Risk & Controls, and Transparency.</p><p>Data collection was performed through a structured questionnaire covering quantitative metrics and qualitative disclosures. Scoring is based on a weighted average methodology with critical items carrying higher weight.</p><p>The reporting boundary includes all operations under direct control of the organization. Where data was estimated or extrapolated, this has been noted in the relevant sections.</p><p>This report is intended to provide stakeholders with a comprehensive view of the organization's ESG performance and should be read in conjunction with the annual financial statements.</p>
+        </div>
+        
+        
+      </section>
+    
+
+    
+    <section class="disclosure-stats">
+      <h2>📋 Disclosure Index</h2>
+      <div class="stats-grid">
+        <div class="stat-card addressed">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Addressed</div>
+        </div>
+        <div class="stat-card partial">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Partial</div>
+        </div>
+        <div class="stat-card omitted">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Omitted</div>
+        </div>
+        <div class="stat-card total">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Completion</div>
+        </div>
+      </div>
+    </section>
+  
+
+    
+    <section class="data-annex">
+      <h2>📊 Data Annex - Quantitative Disclosures</h2>
+      <p class="annex-intro">The following table presents all quantitative metrics disclosed in this report in GRI-compatible format.</p>
+      <table class="annex-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Unit</th>
+            <th>Section</th>
+            <th>Disclosure Ref</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><code>GHG_SCOPE1</code></td>
+              <td>GHG_SCOPE1</td>
+              <td class="value-cell"><strong>2,450</strong></td>
+              <td>tCO2e</td>
+              <td>environmental</td>
+              <td>-</td>
+            </tr>
+          
+            <tr>
+              <td><code>GHG_SCOPE2</code></td>
+              <td>GHG_SCOPE2</td>
+              <td class="value-cell"><strong>1,820</strong></td>
+              <td>tCO2e</td>
+              <td>environmental</td>
+              <td>-</td>
+            </tr>
+          
+            <tr>
+              <td><code>ENERGY_CONSUMPTION</code></td>
+              <td>ENERGY_CONSUMPTION</td>
+              <td class="value-cell"><strong>45,000</strong></td>
+              <td>GJ</td>
+              <td>environmental</td>
+              <td>-</td>
+            </tr>
+          
+            <tr>
+              <td><code>RENEWABLE_ENERGY_PCT</code></td>
+              <td>RENEWABLE_ENERGY_PCT</td>
+              <td class="value-cell"><strong>35</strong></td>
+              <td>%</td>
+              <td>environmental</td>
+              <td>-</td>
+            </tr>
+          
+            <tr>
+              <td><code>FEMALE_EMPLOYEES_PCT</code></td>
+              <td>FEMALE_EMPLOYEES_PCT</td>
+              <td class="value-cell"><strong>28</strong></td>
+              <td>%</td>
+              <td>social</td>
+              <td>-</td>
+            </tr>
+          
+            <tr>
+              <td><code>FEMALE_LEADERSHIP_PCT</code></td>
+              <td>FEMALE_LEADERSHIP_PCT</td>
+              <td class="value-cell"><strong>22</strong></td>
+              <td>%</td>
+              <td>social</td>
+              <td>-</td>
+            </tr>
+          
+            <tr>
+              <td><code>LOST_TIME_INJURY_RATE</code></td>
+              <td>LOST_TIME_INJURY_RATE</td>
+              <td class="value-cell"><strong>0.8</strong></td>
+              <td>per 200,000 hours</td>
+              <td>social</td>
+              <td>-</td>
+            </tr>
+          
+            <tr>
+              <td><code>INDEPENDENT_DIRECTORS_PCT</code></td>
+              <td>INDEPENDENT_DIRECTORS_PCT</td>
+              <td class="value-cell"><strong>60</strong></td>
+              <td>%</td>
+              <td>governance</td>
+              <td>-</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </section>
+  
+
+    <footer>
+        <p>Generated on February 4, 2026</p>
+        <p>Template Version 1.0.0 • Report ID: df467024</p>
+        <p>Prepared using AFAQ ESG Platform in accordance with QSE Sustainability Reporting Guidelines</p>
+    </footer>
+</body>
+</html>
+  

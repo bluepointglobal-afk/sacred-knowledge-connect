@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Architect Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00f5a0, #00d9f5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header .date {
+            font-size: 1.1em;
+            color: #888;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 245, 160, 0.2);
+        }
+        
+        .card h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #00f5a0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h3 {
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+            color: #00d9f5;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .status.active {
+            background: #00f5a033;
+            color: #00f5a0;
+        }
+        
+        .status.dev {
+            background: #ffd70033;
+            color: #ffd700;
+        }
+        
+        .status.research {
+            background: #00d9f533;
+            color: #00d9f5;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid #00f5a0;
+        }
+        
+        .metric .label {
+            color: #aaa;
+        }
+        
+        .metric .value {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .project {
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 4px solid #00f5a0;
+        }
+        
+        .project.dev {
+            border-left-color: #ffd700;
+        }
+        
+        .project.research {
+            border-left-color: #00d9f5;
+        }
+        
+        .project h4 {
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .project p {
+            color: #aaa;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        
+        .action-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid #00d9f5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .focus-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(0, 245, 160, 0.1), rgba(0, 217, 245, 0.1));
+        }
+        
+        .revenue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .revenue-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .revenue-item .amount {
+            font-size: 2em;
+            color: #00f5a0;
+            font-weight: bold;
+            display: block;
+            margin: 10px 0;
+        }
+        
+        .revenue-item .label {
+            color: #aaa;
+            font-size: 0.9em;
+        }
+        
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        ul li {
+            margin: 8px 0;
+            color: #ccc;
+        }
+        
+        .timestamp {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="max-width:1400px;margin:0 auto 14px;display:flex;gap:12px;justify-content:flex-end;align-items:center;">
+        <a href="./index.html" style="text-decoration:none;color:#cfefff;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.12);padding:10px 14px;border-radius:12px;">← Command Center</a>
+        <a href="./org-chart.html" style="text-decoration:none;color:#00f5a0;background:rgba(0,245,160,0.12);border:1px solid rgba(0,245,160,0.35);padding:10px 14px;border-radius:12px;">Team / Colony Org →</a>
+    </div>
+
+        <div class="header">
+            <h1>⚡ ARCHITECT DASHBOARD</h1>
+            <div class="date" id="currentDate"></div>
+        </div>
+
+        <div class="grid">
+            <div class="card focus-section">
+                <h2>🎯 STRATEGIC FOCUS</h2>
+                <div class="project">
+                    <h4>1. Madinah Project</h4>
+                    <p><strong>Status:</strong> Strategy Phase</p>
+                    <p>Islamic education immersion program (12-16 age group) targeting schools in USA, Canada, Europe, UK</p>
+                    <p><strong>Next:</strong> Cost analysis, school outreach list, partnership establishment</p>
+                </div>
+                <div class="project">
+                    <h4>2. Agent Monetization Engine</h4>
+                    <p><strong>Status:</strong> Pre-Launch</p>
+                    <p>Phase 1: Freelance ($24K/mo) → Phase 2: Marketplace ($90K/mo) → Phase 3: Moltbook viral loop</p>
+                    <p><strong>Next:</strong> Launch 5 agent freelance profiles, submit first 50 proposals</p>
+                </div>
+                <div class="project">
+                    <h4>3. SacredChain</h4>
+                    <p><strong>Status:</strong> Development</p>
+                    <p>Credible Islamic knowledge platform with scholar bookings</p>
+                </div>
+                <div class="project">
+                    <h4>4. OpenClaw/SSF</h4>
+                    <p><strong>Status:</strong> Core R&D</p>
+                    <p>Agent execution & orchestration layer with Synthetic Soul Framework</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>💰 REVENUE TARGETS</h2>
+                <div class="revenue-grid">
+                    <div class="revenue-item">
+                        <div class="label">Phase 1 (0-3mo)</div>
+                        <span class="amount">$24K</span>
+                        <div class="label">Agent Freelance/mo</div>
+                    </div>
+                    <div class="revenue-item">
+                        <div class="label">Phase 2 (3-12mo)</div>
+                        <span class="amount">$90K+</span>
+                        <div class="label">Marketplace/mo</div>
+                    </div>
+                    <div class="revenue-item">
+                        <div class="label">Scale Target</div>
+                        <span class="amount">$675K</span>
+                        <div class="label">At 5% conversion</div>
+                    </div>
+                </div>
+                
+                <h3>Active Revenue Engines</h3>
+                <div class="metric">
+                    <span class="label">Agent Freelance</span>
+                    <span class="value">Pre-Launch</span>
+                </div>
+                <div class="metric">
+                    <span class="label">Trading Systems</span>
+                    <span class="value">Active</span>
+                </div>
+                <div class="metric">
+                    <span class="label">Dropshipping</span>
+                    <span class="value">Testing</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 PROJECT STATUS</h2>
+                <h3>🟢 Active Execution</h3>
+                <div class="project">
+                    <h4>Agent Freelance <span class="status active">LAUNCH READY</span></h4>
+                    <p>Next: First 5 clients | Revenue: Pre-revenue</p>
+                </div>
+                <div class="project">
+                    <h4>Madinah Project <span class="status active">STRATEGY</span></h4>
+                    <p>Next: Outreach plan | Revenue: Pre-revenue</p>
+                </div>
+                
+                <h3>🟡 Development</h3>
+                <div class="project dev">
+                    <h4>Agent Marketplace <span class="status dev">DESIGN</span></h4>
+                    <p>Next: Platform spec | Timeline: Q2 2026</p>
+                </div>
+                <div class="project dev">
+                    <h4>SacredChain <span class="status dev">BUILD</span></h4>
+                    <p>Next: Beta launch | Timeline: Q2 2026</p>
+                </div>
+                
+                <h3>🔵 Research</h3>
+                <div class="project research">
+                    <h4>SSF Framework <span class="status research">R&D</span></h4>
+                    <p>Core architecture for autonomous agents</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚡ THIS WEEK</h2>
+                <div class="action-item">
+                    <input type="checkbox" id="task1">
+                    <label for="task1">Finalize Madinah Project strategy document</label>
+                </div>
+                <div class="action-item">
+                    <input type="checkbox" id="task2">
+                    <label for="task2">Draft agent freelance service offerings</label>
+                </div>
+                <div class="action-item">
+                    <input type="checkbox" id="task3">
+                    <label for="task3">Design agent marketplace platform spec</label>
+                </div>
+                <div class="action-item">
+                    <input type="checkbox" id="task4">
+                    <label for="task4">Identify Moltbook announcement strategy</label>
+                </div>
+                <div class="action-item">
+                    <input type="checkbox" id="task5">
+                    <label for="task5">Create agent profiles on Upwork/Fiverr</label>
+                </div>
+                <div class="action-item">
+                    <input type="checkbox" id="task6">
+                    <label for="task6">Build target Islamic schools list</label>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 THIS MONTH</h2>
+                <ul>
+                    <li>Launch agent freelance services (first 5 clients)</li>
+                    <li>Complete Madinah Project outreach list</li>
+                    <li>Build agent marketplace MVP</li>
+                    <li>Prepare Moltbook viral campaign</li>
+                    <li>Submit 200+ freelance proposals across platforms</li>
+                    <li>Establish Madinah partnerships (university, housing)</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🧠 KEY METRICS</h2>
+                <h3>Agent Monetization</h3>
+                <div class="metric">
+                    <span class="label">Active Agents</span>
+                    <span class="value">0 → 5</span>
+                </div>
+                <div class="metric">
+                    <span class="label">Monthly Revenue</span>
+                    <span class="value">$0 → $24K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">Marketplace Agents</span>
+                    <span class="value">0 → 1,000</span>
+                </div>
+                
+                <h3>Madinah Project</h3>
+                <div class="metric">
+                    <span class="label">Schools Reached</span>
+                    <span class="value">0 → TBD</span>
+                </div>
+                <div class="metric">
+                    <span class="label">Programs Booked</span>
+                    <span class="value">0</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💡 STRATEGIC NOTES</h2>
+                <h3>Agent Marketplace Edge</h3>
+                <p style="color: #ccc; margin: 10px 0;">
+                    <strong>Learning Lineage:</strong> Not generic agents—specialists with proven track records, 
+                    task history, client ratings per skill, and training provenance. First-mover advantage 
+                    in verified expertise marketplace.
+                </p>
+                
+                <h3>Madinah Project Edge</h3>
+                <p style="color: #ccc; margin: 10px 0;">
+                    <strong>End-to-End Service:</strong> Complete facilitation from visas to homecoming. 
+                    Target kids 12-16 from Islamic schools. Arabic classes + daily Haram circles + 
+                    curated experiences.
+                </p>
+                
+                <h3>Execution Principle</h3>
+                <p style="color: #ccc; margin: 10px 0;">
+                    Freelance first (immediate cash flow + track records) → Marketplace (platform leverage) → 
+                    Moltbook (viral scale at 151K+ agents)
+                </p>
+            </div>
+        </div>
+
+        <div class="timestamp">
+            Last updated: <span id="timestamp"></span>
+        </div>
+    </div>
+
+    <script>
+        // Update current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        
+        // Update timestamp
+        document.getElementById('timestamp').textContent = now.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // Save checkbox state to localStorage
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            // Load saved state
+            const saved = localStorage.getItem(checkbox.id);
+            if (saved === 'true') {
+                checkbox.checked = true;
+            }
+            
+            // Save on change
+            checkbox.addEventListener('change', () => {
+                localStorage.setItem(checkbox.id, checkbox.checked);
+            });
+        });
+    </script>
+</body>
+</html>

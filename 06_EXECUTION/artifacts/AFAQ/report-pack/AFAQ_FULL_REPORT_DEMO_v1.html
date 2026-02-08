@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AFAQ ESG — Demo Full Report (A4) v1</title>
+  <style>
+    :root{--bg:#0b1020;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--text:#eaf6ff;--muted:#a7c2d6;--accent:#7fb6ff;--ok:#7fffd4;--warn:#ffd18a;--bad:#ff6b6b}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,system-ui,sans-serif;}
+    .wrap{max-width:980px;margin:0 auto;padding:28px 18px 80px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin:14px 0}
+    h1,h2,h3{margin:0 0 10px}
+    h1{font-size:30px}
+    h2{font-size:20px;margin-top:14px}
+    h3{font-size:16px;margin-top:14px;color:#d7ecff}
+    .muted{color:var(--muted);font-size:13px;line-height:1.6}
+    .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .box{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:14px}
+    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}
+    th,td{border-bottom:1px solid rgba(255,255,255,.10);padding:10px 8px;vertical-align:top}
+    th{color:#cfe6f5;text-align:left;font-weight:800}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);color:#b7d3ea;font-size:12px}
+    .page-break{break-after:page;page-break-after:always;height:1px}
+    .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden}
+    .bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));width:0%}
+    .sig{margin-top:10px}
+    .sig .name{font-weight:900}
+    .callout{border-left:4px solid var(--accent);padding-left:12px;margin-top:10px}
+
+    /* Print */
+    @page { size: A4; margin: 14mm; }
+    @media print {
+      :root{ --bg:#ffffff; --text:#0b1020; --muted:#2c3e50; --card:#ffffff; --line:#e6e6e6; --accent:#2457ff; --ok:#007a5a; --warn:#8a5a00; --bad:#b10000; }
+      body{background:#fff;color:#000}
+      .wrap{max-width:none;padding:0}
+      .card{border:0;border-radius:0;padding:0;margin:0}
+      .box{border:1px solid #ddd;background:#fff}
+      .bar{background:#eee}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- COVER -->
+    <div class="card">
+      <div class="k">AFAQ ESG • Demo</div>
+      <h1>Sustainability / ESG Report</h1>
+      <div class="muted">
+        <strong>Client:</strong> Example Logistics Co (UAE)<br/>
+        <strong>Reporting period:</strong> FY2025 (last 12 months)<br/>
+        <strong>Framework alignment:</strong> IFRS S1/S2, TCFD, GRI (illustrative)
+      </div>
+      <div style="margin-top:14px" class="pill">Board / Client Ready • A4 PDF</div>
+      <div class="muted" style="margin-top:10px">Note: This is a demo showing structure, tables, charts, CEO message, and audit-friendly limitations.</div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- CEO MESSAGE -->
+    <div class="card">
+      <h2>CEO Message</h2>
+      <div class="muted">
+        Sustainability is now a procurement requirement, a cost driver, and a trust signal. Our approach is pragmatic: we start with evidence, disclose what we can support today, clearly state limitations, and run a 90‑day plan to close gaps.
+        <br/><br/>
+        This report reflects our current performance and the actions we are taking to strengthen governance, improve measurement (especially emissions and safety indicators), and align with recognized disclosure frameworks.
+      </div>
+      <div class="sig">
+        <div class="name">[CEO Name]</div>
+        <div class="muted">Chief Executive Officer, Example Logistics Co</div>
+        <div class="muted">Date: 2026‑02‑02</div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- EXEC SUMMARY -->
+    <div class="card" id="exec">
+      <h2>Executive Summary</h2>
+      <div class="grid">
+        <div class="box">
+          <div class="k">Overall readiness</div>
+          <div style="font-size:44px;font-weight:900;margin-top:8px">68 / 100</div>
+          <div class="muted">Strong narrative baseline. Biggest lift: emissions inventory + supplier policy + standardized safety KPIs.</div>
+        </div>
+        <div class="box">
+          <div class="k">Priority gaps</div>
+          <ol class="muted">
+            <li>Scope 1/2 baseline not documented (methodology + sources)</li>
+            <li>No supplier ESG policy / code of conduct</li>
+            <li>H&S reporting inconsistent across sites</li>
+            <li>ESG executive ownership not formally assigned</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="box" style="margin-top:12px">
+        <div class="k">Pillar scores (illustrative)</div>
+        <table>
+          <tr><th>Pillar</th><th>Score</th><th>Signal</th></tr>
+          <tr><td>Governance</td><td>62</td><td><div class="bar"><span style="width:62%"></span></div></td></tr>
+          <tr><td>Strategy</td><td>70</td><td><div class="bar"><span style="width:70%"></span></div></td></tr>
+          <tr><td>Risk Management</td><td>66</td><td><div class="bar"><span style="width:66%"></span></div></td></tr>
+          <tr><td>Metrics & Targets</td><td>54</td><td><div class="bar"><span style="width:54%"></span></div></td></tr>
+        </table>
+      </div>
+
+      <div class="callout muted">
+        <strong>Audit-friendly rule:</strong> We do not invent metrics. Where data is missing, we label it and carry it into the improvement plan.
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- COMPANY PROFILE -->
+    <div class="card" id="profile">
+      <h2>Company Profile</h2>
+      <table>
+        <tr><th>Item</th><th>Value</th></tr>
+        <tr><td>Legal entity</td><td>Example Logistics Co</td></tr>
+        <tr><td>Sector</td><td>Logistics</td></tr>
+        <tr><td>Employees</td><td>300</td></tr>
+        <tr><td>Operating footprint</td><td>UAE (HQ + 3 sites)</td></tr>
+        <tr><td>Primary driver</td><td>Client procurement questionnaires + compliance expectations</td></tr>
+      </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- METRICS & CHARTS -->
+    <div class="card" id="metrics">
+      <h2>Metrics & Targets (Evidence-led)</h2>
+      <div class="muted">Below shows how tables + charts are embedded. In a real client report, charts only use evidenced numbers.</div>
+
+      <h3>Key KPI table (demo)</h3>
+      <table>
+        <tr><th>Metric</th><th>Value</th><th>Unit</th><th>Source</th><th>Status</th></tr>
+        <tr><td>Electricity consumption</td><td>1,240,000</td><td>kWh</td><td>Utility bills (12 months)</td><td>Evidence provided</td></tr>
+        <tr><td>Scope 2 emissions (location-based)</td><td>—</td><td>tCO2e</td><td>—</td><td>Not calculated (factor not confirmed)</td></tr>
+        <tr><td>Total recordable incidents</td><td>7</td><td>count</td><td>H&S log</td><td>Evidence provided</td></tr>
+        <tr><td>Supplier code adoption</td><td>0</td><td>%</td><td>Policy review</td><td>Gap</td></tr>
+      </table>
+
+      <h3>Chart embed (demo)</h3>
+      <div class="box">
+        <div class="k">Electricity usage (kWh) — illustrative monthly trend</div>
+        <svg viewBox="0 0 800 260" width="100%" height="260" role="img" aria-label="Monthly electricity usage chart">
+          <rect x="0" y="0" width="800" height="260" fill="rgba(0,0,0,0)" />
+          <!-- axes -->
+          <line x1="60" y1="20" x2="60" y2="220" stroke="rgba(255,255,255,.35)" stroke-width="1" />
+          <line x1="60" y1="220" x2="770" y2="220" stroke="rgba(255,255,255,.35)" stroke-width="1" />
+          <!-- bars (12 months) -->
+          <g fill="rgba(127,182,255,.85)">
+            <rect x="80"  y="120" width="40" height="100" rx="6" />
+            <rect x="140" y="108" width="40" height="112" rx="6" />
+            <rect x="200" y="90"  width="40" height="130" rx="6" />
+            <rect x="260" y="98"  width="40" height="122" rx="6" />
+            <rect x="320" y="82"  width="40" height="138" rx="6" />
+            <rect x="380" y="70"  width="40" height="150" rx="6" />
+            <rect x="440" y="76"  width="40" height="144" rx="6" />
+            <rect x="500" y="88"  width="40" height="132" rx="6" />
+            <rect x="560" y="100" width="40" height="120" rx="6" />
+            <rect x="620" y="112" width="40" height="108" rx="6" />
+            <rect x="680" y="118" width="40" height="102" rx="6" />
+            <rect x="740" y="104" width="40" height="116" rx="6" />
+          </g>
+          <!-- labels -->
+          <g fill="rgba(234,246,255,.75)" font-size="11" font-family="system-ui">
+            <text x="60" y="240" text-anchor="start">Jan</text>
+            <text x="120" y="240" text-anchor="start">Feb</text>
+            <text x="180" y="240" text-anchor="start">Mar</text>
+            <text x="240" y="240" text-anchor="start">Apr</text>
+            <text x="300" y="240" text-anchor="start">May</text>
+            <text x="360" y="240" text-anchor="start">Jun</text>
+            <text x="420" y="240" text-anchor="start">Jul</text>
+            <text x="480" y="240" text-anchor="start">Aug</text>
+            <text x="540" y="240" text-anchor="start">Sep</text>
+            <text x="600" y="240" text-anchor="start">Oct</text>
+            <text x="660" y="240" text-anchor="start">Nov</text>
+            <text x="720" y="240" text-anchor="start">Dec</text>
+          </g>
+        </svg>
+        <div class="muted">In production, this chart is generated from the client’s evidence-backed monthly totals.</div>
+      </div>
+
+      <h3>Targets (demo format)</h3>
+      <table>
+        <tr><th>Target</th><th>Baseline</th><th>Year</th><th>Owner</th><th>Status</th></tr>
+        <tr><td>Complete Scope 1/2 inventory</td><td>Missing</td><td>2026</td><td>Finance + HSE</td><td>Planned</td></tr>
+        <tr><td>Issue supplier ESG code + onboarding</td><td>0%</td><td>2026</td><td>Procurement</td><td>Planned</td></tr>
+      </table>
+
+      <h3>Limitations</h3>
+      <ul class="muted">
+        <li>Scope 2 emissions not calculated in this demo due to missing confirmed emissions factor.</li>
+        <li>Scope 1 fuel data not provided.</li>
+        <li>Scope 3 assessment not initiated.</li>
+      </ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- PLAN -->
+    <div class="card" id="plan">
+      <h2>30/60/90-Day Improvement Plan</h2>
+      <table>
+        <tr><th>Horizon</th><th>Actions</th><th>Deliverable</th></tr>
+        <tr><td>30 days</td><td>Appoint ESG owner; establish governance cadence; evidence register</td><td>Charter + tracker + data request list</td></tr>
+        <tr><td>60 days</td><td>Emissions inventory workbook; supplier policy; safety KPI definitions</td><td>Inventory + supplier code draft + KPI dictionary</td></tr>
+        <tr><td>90 days</td><td>External-ready report + questionnaire mapping</td><td>Final A4 PDF + appendices</td></tr>
+      </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- APPENDIX -->
+    <div class="card" id="appendix">
+      <h2>Appendix: Evidence Register (Demo)</h2>
+      <table>
+        <tr><th>Evidence Item</th><th>Source</th><th>Date</th><th>Coverage</th></tr>
+        <tr><td>Electricity bills (12 months)</td><td>Utility provider</td><td>2025</td><td>Energy usage baseline</td></tr>
+        <tr><td>H&S incident log</td><td>Internal HSE</td><td>2025</td><td>Safety KPIs</td></tr>
+      </table>
+      <div class="muted" style="margin-top:10px">This appendix is how we stay audit-friendly: every claim and number is tied to a source or marked missing.</div>
+    </div>
+
+  </div>
+</body>
+</html>

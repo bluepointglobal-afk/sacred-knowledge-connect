@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Status Dashboard — 2026-02-04</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f1419;
+            color: #e4e6eb;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #2a2d33;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .meta {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #a0a0a0;
+        }
+
+        .meta-item {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .meta-badge {
+            background: #2a2d33;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', monospace;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: #1a1d24;
+            border: 1px solid #2a2d33;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .summary-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .summary-card .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #a0a0a0;
+        }
+
+        .summary-card.danger .number { color: #ff4757; }
+        .summary-card.warning .number { color: #ffa502; }
+        .summary-card.success .number { color: #2ed573; }
+
+        /* Red Flags Section */
+        .red-flags {
+            background: #2a1515;
+            border: 1px solid #8b3a3a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 30px;
+        }
+
+        .red-flags h2 {
+            color: #ff4757;
+            font-size: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flag-item {
+            background: #1a0d0d;
+            border-left: 3px solid #ff4757;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .flag-item strong {
+            color: #ff4757;
+        }
+
+        /* Main Table */
+        .table-wrapper {
+            background: #1a1d24;
+            border: 1px solid #2a2d33;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #242830;
+            position: sticky;
+            top: 0;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #a0a0a0;
+            border-bottom: 1px solid #2a2d33;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 11px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #2a2d33;
+        }
+
+        tbody tr:hover {
+            background: #242830;
+        }
+
+        tbody tr.urgent {
+            background: #2a1515;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge.tick { 
+            background: #0a3b2e;
+            color: #2ed573;
+        }
+
+        .badge.x { 
+            background: #2a1515;
+            color: #ff4757;
+        }
+
+        .badge.warn { 
+            background: #3a2a15;
+            color: #ffa502;
+        }
+
+        /* Verdict Badges */
+        .verdict {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: inline-block;
+        }
+
+        .verdict.go {
+            background: #0a3b2e;
+            color: #2ed573;
+        }
+
+        .verdict.iterate {
+            background: #3a2a15;
+            color: #ffa502;
+        }
+
+        .verdict.blocked {
+            background: #2a1515;
+            color: #ff4757;
+        }
+
+        .verdict.killed {
+            background: #1a1d24;
+            color: #a0a0a0;
+            text-decoration: line-through;
+        }
+
+        /* Status Pills */
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-transform: capitalize;
+            background: #2a2d33;
+            color: #e4e6eb;
+        }
+
+        .status.ready {
+            background: #0a3b2e;
+            color: #2ed573;
+        }
+
+        .status.queued {
+            background: #2a2a0a;
+            color: #ffd93d;
+        }
+
+        .status.waiting {
+            background: #2a1515;
+            color: #ff4757;
+        }
+
+        .status.deferred {
+            background: #2a2a2a;
+            color: #a0a0a0;
+        }
+
+        .status.blocked {
+            background: #2a1515;
+            color: #ff4757;
+        }
+
+        .status.archived {
+            background: #1a1d24;
+            color: #888;
+            text-decoration: line-through;
+        }
+
+        /* Phase Badge */
+        .phase {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: #2a2d33;
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+        }
+
+        /* Owner Tier */
+        .tier {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-transform: capitalize;
+            background: #2a2d33;
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        .tier.codex {
+            background: #1a2a3a;
+            color: #5b9fd3;
+        }
+
+        .tier.kimi {
+            background: #2a1a3a;
+            color: #9b5bdb;
+        }
+
+        .tier.human {
+            background: #3a2a1a;
+            color: #d9a651;
+        }
+
+        .tier.admin {
+            background: #2a2a2a;
+            color: #a0a0a0;
+        }
+
+        /* ETA Badge */
+        .eta {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background: #2a2d33;
+            color: #e4e6eb;
+            font-family: 'Monaco', monospace;
+        }
+
+        .eta.asap {
+            background: #2a1515;
+            color: #ff4757;
+        }
+
+        .eta.urgent {
+            background: #3a2a15;
+            color: #ffa502;
+        }
+
+        /* Project Name */
+        .project-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Queue Section */
+        .queue-section {
+            background: #1a1d24;
+            border: 1px solid #2a2d33;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .queue-section h2 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .queue-item {
+            background: #242830;
+            border-left: 3px solid #2ed573;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .queue-item.p0 {
+            border-left-color: #ff4757;
+            background: #2a1515;
+        }
+
+        .queue-item.p1 {
+            border-left-color: #ffa502;
+            background: #3a2a15;
+        }
+
+        .queue-item.p2 {
+            border-left-color: #ffd93d;
+            background: #2a2a0a;
+        }
+
+        .queue-item .priority {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 10px;
+            margin-right: 8px;
+            font-family: 'Monaco', monospace;
+        }
+
+        .queue-item.p0 .priority {
+            background: #2a1515;
+            color: #ff4757;
+        }
+
+        .queue-item.p1 .priority {
+            background: #3a2a15;
+            color: #ffa502;
+        }
+
+        .queue-item.p2 .priority {
+            background: #2a2a0a;
+            color: #ffd93d;
+        }
+
+        .queue-item .detail {
+            display: block;
+            margin-top: 4px;
+            color: #a0a0a0;
+            font-size: 12px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #2a2d33;
+            color: #a0a0a0;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+
+        /* Checklist column styling */
+        .check {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .check.yes {
+            color: #2ed573;
+        }
+
+        .check.no {
+            color: #ff4757;
+        }
+
+        .check.warn {
+            color: #ffa502;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ PROJECT STATUS DASHBOARD</h1>
+            <div class="meta">
+                <div class="meta-item">📅 <span class="meta-badge">2026-02-04 06:37 PST</span></div>
+                <div class="meta-item">👤 <span class="meta-badge">Tim (Haiku)</span></div>
+                <div class="meta-item">📊 <span class="meta-badge">8 Projects</span></div>
+                <div class="meta-item">🎯 <span class="meta-badge">M2M Cycle</span></div>
+            </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card danger">
+                <div class="label">🚨 P0 Overdue</div>
+                <div class="number">2</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="label">⏳ P1 Queued</div>
+                <div class="number">2</div>
+            </div>
+            <div class="summary-card success">
+                <div class="label">✅ Ready</div>
+                <div class="number">4</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="label">🔴 Blocked</div>
+                <div class="number">1</div>
+            </div>
+        </div>
+
+        <!-- Red Flags -->
+        <div class="red-flags">
+            <h2>🚨 RED FLAGS</h2>
+            <div class="flag-item">
+                <strong>OVERDUE (1h 37min):</strong> Madinah outreach emails drafted but NOT sent. Action: Architect sends 6 emails to USA schools.
+            </div>
+            <div class="flag-item">
+                <strong>OVERDUE (1h 37min):</strong> Agent Marketplace proposals drafted but NOT submitted. Action: Architect logs into Upwork, submits 10 proposals.
+            </div>
+            <div class="flag-item">
+                <strong>BLOCKED:</strong> SacredChain golden path blocked on offline fallback (Supabase mock). Owner: Codex (or escalate to Sonnet if stuck).
+            </div>
+        </div>
+
+        <!-- Master Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Repo ✓</th>
+                        <th>M2M ✓</th>
+                        <th>Phase</th>
+                        <th>Verdict</th>
+                        <th>Status</th>
+                        <th>Next Action</th>
+                        <th>Owner</th>
+                        <th>Blocker</th>
+                        <th>ETA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Petdate -->
+                    <tr>
+                        <td><span class="project-name">Petdate</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="phase">4</span></td>
+                        <td><span class="verdict iterate">ITERATE</span></td>
+                        <td><span class="status queued">Dev Queued</span></td>
+                        <td>Fix swipes (5→25-50), location bug, messaging</td>
+                        <td><span class="tier codex">Codex</span></td>
+                        <td>None</td>
+                        <td><span class="eta urgent">48h</span></td>
+                    </tr>
+
+                    <!-- AFAQ ESG -->
+                    <tr>
+                        <td><span class="project-name">AFAQ ESG</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="phase">4</span></td>
+                        <td><span class="verdict iterate">ITERATE</span></td>
+                        <td><span class="status queued">Dev Queued</span></td>
+                        <td>Add sample report preview to free tier</td>
+                        <td><span class="tier codex">Codex</span></td>
+                        <td>None</td>
+                        <td><span class="eta urgent">24h</span></td>
+                    </tr>
+
+                    <!-- NoorStudio -->
+                    <tr>
+                        <td><span class="project-name">NoorStudio</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="phase">2</span></td>
+                        <td><span class="verdict iterate">ITERATE</span></td>
+                        <td><span class="status deferred">Deferred</span></td>
+                        <td>Character consistency + approval flow + story import</td>
+                        <td><span class="tier codex">Codex</span></td>
+                        <td>Arch complexity</td>
+                        <td><span class="eta">P1</span></td>
+                    </tr>
+
+                    <!-- NikahX -->
+                    <tr>
+                        <td><span class="project-name">NikahX</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="phase">1→2</span></td>
+                        <td><span class="verdict go">GO</span></td>
+                        <td><span class="status ready">Dev Ready</span></td>
+                        <td>Begin Phase 2 build (onboarding + matching + payments)</td>
+                        <td><span class="tier codex">Codex</span></td>
+                        <td>None</td>
+                        <td><span class="eta">2-3w</span></td>
+                    </tr>
+
+                    <!-- SacredChain -->
+                    <tr>
+                        <td><span class="project-name">SacredChain</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="phase">3</span></td>
+                        <td><span class="verdict blocked">Blocked</span></td>
+                        <td><span class="status blocked">Blocked</span></td>
+                        <td>Fix offline fallback, complete golden path E2E</td>
+                        <td><span class="tier codex">Codex</span></td>
+                        <td>Supabase mock fallback</td>
+                        <td><span class="eta">P2</span></td>
+                    </tr>
+
+                    <!-- Madinah -->
+                    <tr class="urgent">
+                        <td><span class="project-name">Madinah</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="phase">1</span></td>
+                        <td><span class="verdict go">GO</span></td>
+                        <td><span class="status waiting">Waiting Human</span></td>
+                        <td>Send 6 school outreach emails (6 schools, personalized)</td>
+                        <td><span class="tier human">Human</span></td>
+                        <td>None</td>
+                        <td><span class="eta asap">48h</span></td>
+                    </tr>
+
+                    <!-- Agent Marketplace -->
+                    <tr class="urgent">
+                        <td><span class="project-name">Agent Mkt</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="phase">0→1</span></td>
+                        <td><span class="verdict go">GO</span></td>
+                        <td><span class="status waiting">Waiting Human</span></td>
+                        <td>Submit 10 Upwork proposals (ESG, AI, React templates ready)</td>
+                        <td><span class="tier human">Human</span></td>
+                        <td>None</td>
+                        <td><span class="eta asap">24h</span></td>
+                    </tr>
+
+                    <!-- Mawashi -->
+                    <tr>
+                        <td><span class="project-name">Mawashi</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="check yes">✓</span></td>
+                        <td><span class="phase">—</span></td>
+                        <td><span class="verdict killed">KILLED</span></td>
+                        <td><span class="status archived">Archived</span></td>
+                        <td>Delete repo from GitHub</td>
+                        <td><span class="tier admin">Admin</span></td>
+                        <td>None</td>
+                        <td><span class="eta asap">ASAP</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Execution Queue -->
+        <div class="queue-section">
+            <h2>📋 EXECUTION QUEUE (BY PRIORITY)</h2>
+
+            <h3 style="color: #ff4757; margin: 20px 0 12px 0; font-size: 13px;">P0 — EXECUTE TODAY (1h+ OVERDUE)</h3>
+            
+            <div class="queue-item p0">
+                <span class="priority">P0</span>
+                <strong>Madinah School Outreach</strong>
+                <span class="detail">6 personalized emails ready → Architect logs into Gmail, sends to Al-Huda, Universal Academy, ISI, Tarbiyah, MCC, Al-Rahmah</span>
+                <span class="detail">📁 File: `/06_EXECUTION/artifacts/Madinah_Outreach_Emails_READY_2026-02-04.md`</span>
+                <span class="detail">🎯 Success: 40%+ response rate (4 schools) within 48h</span>
+            </div>
+
+            <div class="queue-item p0">
+                <span class="priority">P0</span>
+                <strong>Agent Marketplace Upwork Proposals</strong>
+                <span class="detail">10 proposals (5 templates) ready → Architect logs into Upwork, searches jobs, submits proposals, tracks URLs</span>
+                <span class="detail">📁 File: `/06_EXECUTION/artifacts/AgentMarketplace/UPWORK_PROPOSALS_READY_2026-02-04.md`</span>
+                <span class="detail">🎯 Success: 20-30% response rate, 1 job won within 7 days → $1K revenue</span>
+            </div>
+
+            <h3 style="color: #ffa502; margin: 20px 0 12px 0; font-size: 13px;">P1 — START NOW (DEV WORKERS)</h3>
+
+            <div class="queue-item p1">
+                <span class="priority">P1</span>
+                <strong>AFAQ ESG Sample Report Fix</strong>
+                <span class="detail">Scope: Add redacted sample output to Compliance Results page (free tier) → Codex implementation</span>
+                <span class="detail">🎯 Success: SME re-eval shows conversion lift (Phase 4 re-test with Kimi)</span>
+                <span class="detail">⏱️ Target: 24h ship</span>
+            </div>
+
+            <div class="queue-item p1">
+                <span class="priority">P1</span>
+                <strong>Petdate Conversion Fixes</strong>
+                <span class="detail">Scope: (1) Swipes 5→25-50, (2) Fix location geolocation bug, (3) Clarify messaging → Codex implementation</span>
+                <span class="detail">🎯 Success: SME re-eval shows engagement + conversion lift (Phase 4 re-test with Kimi)</span>
+                <span class="detail">⏱️ Target: 48h ship</span>
+            </div>
+
+            <h3 style="color: #ffd93d; margin: 20px 0 12px 0; font-size: 13px;">P2 — QUEUE (PENDING P0/P1)</h3>
+
+            <div class="queue-item p2">
+                <span class="priority">P2</span>
+                <strong>NikahX Phase 2 Build</strong>
+                <span class="detail">Ready to start after P0/P1 shipping → Codex (onboarding + matching + Stripe payments)</span>
+                <span class="detail">📁 Spec ready: Phase 1 market analysis complete</span>
+                <span class="detail">⏱️ Estimate: 2-3 weeks</span>
+            </div>
+        </div>
+
+        <!-- Checkpoints -->
+        <div class="queue-section" style="background: #1a2a24; border-color: #2a4a3a;">
+            <h2 style="color: #2ed573;">⏰ NEXT CHECKPOINTS</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                <div style="background: #0a3b2e; border-left: 3px solid #2ed573; padding: 12px; border-radius: 4px; font-size: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">06:40 PST (T+3 min)</div>
+                    <div style="color: #a0a0a0;">Architect approves + executes P0 (send/submit). Tim spawns 2 Codex workers.</div>
+                </div>
+
+                <div style="background: #0a3b2e; border-left: 3px solid #2ed573; padding: 12px; border-radius: 4px; font-size: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">24h (Tomorrow 06:37)</div>
+                    <div style="color: #a0a0a0;">Agent Marketplace: Check Upwork responses (20-30% rate?). AFAQ: Sample shipped or blocked?</div>
+                </div>
+
+                <div style="background: #0a3b2e; border-left: 3px solid #2ed573; padding: 12px; border-radius: 4px; font-size: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">48h</div>
+                    <div style="color: #a0a0a0;">Madinah: Email responses (40%+ = 4 schools?). Petdate: Fixes shipped. Kimi re-eval queued.</div>
+                </div>
+
+                <div style="background: #0a3b2e; border-left: 3px solid #2ed573; padding: 12px; border-radius: 4px; font-size: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">72h</div>
+                    <div style="color: #a0a0a0;">Cycle decisions: Petdate/AFAQ (DOUBLE DOWN / ITERATE / PIVOT / KILL).</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Dashboard auto-generated by Tim | M2M Cycle Framework | ROUTING.md tier system active</p>
+            <p style="margin-top: 8px; color: #666;">Last validated: 2026-02-04 06:37 PST | Next update: On request or heartbeat</p>
+        </footer>
+    </div>
+</body>
+</html>

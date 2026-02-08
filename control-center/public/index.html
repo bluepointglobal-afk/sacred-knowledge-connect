@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>⚡ Control Center</title>
+  <style>
+    :root{--bg:#0b1020;--panel:rgba(255,255,255,.06);--border:rgba(255,255,255,.12);--muted:#9aa;--fg:#eaeaea;--a:#00f5a0;--b:#00d9f5;}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,system-ui,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:var(--fg)}
+    header{padding:18px 22px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.18);backdrop-filter:blur(10px);position:sticky;top:0}
+    h1{margin:0;font-size:20px;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .wrap{max-width:1400px;margin:0 auto;padding:18px 22px}
+    .grid{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:rgba(0,0,0,.22);border:1px solid var(--border);border-radius:999px;padding:8px 10px;font-size:12px;color:var(--muted)}
+    .kpi{font-size:28px;font-weight:800;color:#fff}
+    .label{font-size:12px;color:var(--muted)}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}
+    th{color:var(--muted);font-weight:600;text-align:left}
+    tr:hover{background:rgba(0,0,0,.18)}
+    a{color:var(--a)}
+    button{cursor:pointer;background:rgba(0,245,160,.12);border:1px solid rgba(0,245,160,.35);color:var(--a);padding:8px 10px;border-radius:10px}
+    pre{white-space:pre-wrap;word-wrap:break-word;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.10);padding:10px;border-radius:12px;max-height:520px;overflow:auto}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap" style="padding:0 22px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <h1>⚡ Architect Control Center</h1>
+      <div class="row">
+        <a class="pill" href="/">Overview</a>
+        <a class="pill" href="/">Sessions</a>
+        <a class="pill" href="/">Costs</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:flex-end;">
+          <div>
+            <div class="label">Total spend (sessions)</div>
+            <div class="kpi" id="kpiCost">—</div>
+          </div>
+          <div>
+            <div class="label">Total tokens</div>
+            <div class="kpi" id="kpiTokens">—</div>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="row" id="byModel"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:800">Sessions</div>
+            <div class="label" id="sessionsMeta">—</div>
+          </div>
+          <button id="refresh">Refresh</button>
+        </div>
+        <div style="height:10px"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Label</th>
+              <th>Model</th>
+              <th>Msgs</th>
+              <th>Cost</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="sessions"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="grid-column:1/-1;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div>
+            <div style="font-weight:800">Session details</div>
+            <div class="label">Click a session → inspect events (raw JSON)</div>
+          </div>
+          <div class="pill" id="detailTitle">—</div>
+        </div>
+        <div style="height:10px"></div>
+        <pre id="detail">Select a session.</pre>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const fmtMoney = (n)=> (n||0).toLocaleString(undefined,{style:'currency',currency:'USD'});
+  const fmtInt = (n)=> (n||0).toLocaleString();
+
+  async function load() {
+    const [stats, sessions] = await Promise.all([
+      fetch('/api/stats').then(r=>r.json()),
+      fetch('/api/sessions').then(r=>r.json())
+    ]);
+
+    document.getElementById('kpiCost').textContent = fmtMoney(stats.grand.cost);
+    document.getElementById('kpiTokens').textContent = fmtInt(stats.grand.totalTokens);
+
+    const byModel = document.getElementById('byModel');
+    byModel.innerHTML = '';
+    Object.entries(stats.byModel)
+      .sort((a,b)=> (b[1].cost)-(a[1].cost))
+      .forEach(([m,v])=>{
+        const el = document.createElement('div');
+        el.className='pill';
+        el.innerHTML = `<strong style="color:#fff;">${m}</strong> — ${fmtMoney(v.cost)} · ${fmtInt(v.totalTokens)} toks · ${v.sessions} sessions`;
+        byModel.appendChild(el);
+      });
+
+    document.getElementById('sessionsMeta').textContent = `${sessions.count} session logs found`;
+
+    const tbody = document.getElementById('sessions');
+    tbody.innerHTML = '';
+    // Hide noisy "connectivity test" runs by default
+    const filtered = sessions.sessions.filter(s => !/\b(opus-test|kimi-test|test\d*)\b/i.test(s.label));
+
+    filtered.slice(0, 30).forEach(s=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(s.label)}</td>
+        <td>${escapeHtml(s.model)}</td>
+        <td>${s.counts.user + s.counts.assistant}</td>
+        <td>${fmtMoney(s.usage.cost)}</td>
+        <td><a href="#" data-file="${encodeURIComponent(s.file)}">open</a></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll('a[data-file]').forEach(a=>{
+      a.addEventListener('click', async (e)=>{
+        e.preventDefault();
+        const file = decodeURIComponent(a.getAttribute('data-file'));
+        const data = await fetch(`/api/sessions/${encodeURIComponent(file)}`).then(r=>r.json());
+        document.getElementById('detailTitle').textContent = file;
+        document.getElementById('detail').textContent = JSON.stringify(data.events, null, 2);
+      });
+    });
+  }
+
+  function escapeHtml(str){
+    return String(str||'').replace(/[&<>"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s]));
+  }
+
+  document.getElementById('refresh').addEventListener('click', load);
+  load().catch(err=>{
+    document.getElementById('detail').textContent = String(err);
+  });
+</script>
+</body>
+</html>

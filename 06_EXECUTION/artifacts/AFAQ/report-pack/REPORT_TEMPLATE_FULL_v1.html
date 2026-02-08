@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AFAQ ESG — Full Sustainability Report Template (v1)</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:rgba(255,255,255,.06); --line:rgba(255,255,255,.12);
+      --text:#eaf6ff; --muted:#a7c2d6; --accent:#7fb6ff; --ok:#7fffd4;
+    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,system-ui,sans-serif;}
+    .wrap{max-width:980px;margin:0 auto;padding:28px 18px 80px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin:14px 0}
+    h1,h2,h3{margin:0 0 10px}
+    h1{font-size:30px;letter-spacing:.01em}
+    h2{font-size:20px;margin-top:14px}
+    h3{font-size:16px;margin-top:14px;color:#d7ecff}
+    .muted{color:var(--muted);font-size:13px;line-height:1.55}
+    .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .box{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:14px}
+    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+    th,td{border-bottom:1px solid rgba(255,255,255,.10);padding:10px 8px;vertical-align:top}
+    th{color:#cfe6f5;text-align:left;font-weight:800}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);color:#b7d3ea;font-size:12px}
+    .toc a{color:var(--ok);text-decoration:none}
+    .toc li{margin:6px 0}
+    .page-break{break-after:page;page-break-after:always;height:1px}
+    .warn{color:#ffd18a}
+
+    /* Print */
+    @media print {
+      :root{ --bg:#ffffff; --text:#0b1020; --muted:#2c3e50; --card:#ffffff; --line:#e6e6e6; --accent:#2457ff; --ok:#007a5a; }
+      body{background:#fff;color:#000}
+      .wrap{max-width:none;padding:0}
+      .card{border:0;border-radius:0;padding:0;margin:0}
+      .box{border:1px solid #ddd;background:#fff}
+      a{color:#000}
+      .page-break{display:block}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- COVER -->
+    <div class="card">
+      <div class="k">AFAQ ESG</div>
+      <h1>Sustainability / ESG Report</h1>
+      <div class="muted">
+        <strong>Client:</strong> <span class="warn">[Company Name]</span><br/>
+        <strong>Reporting period:</strong> <span class="warn">[Last 12 months / FY2025]</span><br/>
+        <strong>Jurisdiction:</strong> <span class="warn">[UAE / KSA / Qatar]</span><br/>
+        <strong>Framework alignment:</strong> <span class="warn">[IFRS S1/S2, TCFD, GRI, Local]</span>
+      </div>
+      <div style="margin-top:14px" class="pill">Version v1 • Prepared by AFAQ ESG</div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- DISCLAIMER -->
+    <div class="card">
+      <h2>Disclaimer & Use</h2>
+      <div class="muted">
+        This report is prepared based on information provided by the client and other evidence sources explicitly cited herein.
+        <strong>No metrics are fabricated.</strong> Where data is missing, we state limitations and recommended next steps.
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- TOC -->
+    <div class="card">
+      <h2>Table of Contents</h2>
+      <ol class="toc muted">
+        <li><a href="#exec">Executive Summary</a></li>
+        <li><a href="#profile">Company Profile</a></li>
+        <li><a href="#method">Methodology & Evidence Register</a></li>
+        <li><a href="#gov">Governance</a></li>
+        <li><a href="#strategy">Strategy</a></li>
+        <li><a href="#risk">Risk Management</a></li>
+        <li><a href="#metrics">Metrics & Targets</a></li>
+        <li><a href="#framework">Framework Mapping</a></li>
+        <li><a href="#plan">30/60/90-Day Improvement Plan</a></li>
+        <li><a href="#appendix">Appendices</a></li>
+      </ol>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- EXEC -->
+    <div class="card" id="exec">
+      <h2>Executive Summary</h2>
+      <div class="grid">
+        <div class="box">
+          <div class="k">Readiness Score</div>
+          <div style="font-size:44px;font-weight:900;margin-top:8px">[__]</div>
+          <div class="muted">Summary of baseline readiness and the 2–3 biggest lifts.</div>
+        </div>
+        <div class="box">
+          <div class="k">Top Risks / Gaps</div>
+          <ul class="muted">
+            <li>[Gap 1 — severity]</li>
+            <li>[Gap 2 — severity]</li>
+            <li>[Gap 3 — severity]</li>
+          </ul>
+        </div>
+      </div>
+      <div class="box" style="margin-top:12px">
+        <div class="k">Board-level Narrative (Audit-friendly)</div>
+        <div class="muted">[Insert grounded narrative. Avoid unsupported claims. Explicitly cite metrics/evidence where possible.]</div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- PROFILE -->
+    <div class="card" id="profile">
+      <h2>Company Profile</h2>
+      <table>
+        <tr><th>Item</th><th>Value</th></tr>
+        <tr><td>Legal entity</td><td>[Company legal name]</td></tr>
+        <tr><td>Industry / subsector</td><td>[Industry / Subsector]</td></tr>
+        <tr><td>Locations</td><td>[HQ + sites]</td></tr>
+        <tr><td>Employees</td><td>[#]</td></tr>
+        <tr><td>Revenue band</td><td>[Range + currency]</td></tr>
+        <tr><td>Listed</td><td>[Yes/No + exchange if listed]</td></tr>
+      </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- METHOD -->
+    <div class="card" id="method">
+      <h2>Methodology & Evidence Register</h2>
+      <div class="muted">
+        We map the client’s available evidence to the selected frameworks and generate narrative sections grounded in that evidence.
+        All missing data is explicitly called out in <strong>Limitations</strong> and carried into the improvement plan.
+      </div>
+      <h3>Evidence Register (sample)</h3>
+      <table>
+        <tr><th>Evidence Item</th><th>Source</th><th>Date</th><th>Coverage</th></tr>
+        <tr><td>[Energy bills]</td><td>[Utility provider]</td><td>[YYYY-MM]</td><td>Scope 2 estimate inputs</td></tr>
+        <tr><td>[H&S incident log]</td><td>[Internal]</td><td>[YYYY]</td><td>Safety metrics</td></tr>
+        <tr><td>[Supplier policy]</td><td>[Internal]</td><td>[YYYY]</td><td>Supply chain governance</td></tr>
+      </table>
+      <div class="muted" style="margin-top:10px"><strong>Limitation rule:</strong> if it isn’t in the evidence register (or clearly marked as planned), we don’t claim it.</div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- GOV -->
+    <div class="card" id="gov">
+      <h2>Governance</h2>
+      <div class="muted">[Insert governance narrative + gaps + how they’ll be addressed.]</div>
+      <h3>Key Gaps</h3>
+      <ul class="muted">
+        <li>[Governance gap 1]</li>
+        <li>[Governance gap 2]</li>
+      </ul>
+      <h3>Limitations</h3>
+      <ul class="muted">
+        <li>[Missing data / missing policy / unclear ownership]</li>
+      </ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- STRATEGY -->
+    <div class="card" id="strategy">
+      <h2>Strategy</h2>
+      <div class="muted">[Insert strategy narrative grounded in provided evidence; include forward-looking statements carefully.]</div>
+      <h3>Key Gaps</h3>
+      <ul class="muted"><li>[Strategy gap 1]</li></ul>
+      <h3>Limitations</h3>
+      <ul class="muted"><li>[Missing scenario analysis, etc.]</li></ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- RISK -->
+    <div class="card" id="risk">
+      <h2>Risk Management</h2>
+      <div class="muted">[Insert risk process narrative: identification, assessment, mitigation, monitoring.]</div>
+      <h3>Risk Register (sample)</h3>
+      <table>
+        <tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Controls / Mitigation</th></tr>
+        <tr><td>[Climate transition risk]</td><td>Medium</td><td>High</td><td>[Plan]</td></tr>
+        <tr><td>[Supply chain compliance]</td><td>High</td><td>Medium</td><td>[Plan]</td></tr>
+      </table>
+      <h3>Limitations</h3>
+      <ul class="muted"><li>[Missing risk quantification / appetite statements]</li></ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- METRICS -->
+    <div class="card" id="metrics">
+      <h2>Metrics & Targets</h2>
+      <div class="muted">Metrics are presented only when evidenced. Where missing, we mark as “Not available” and recommend collection steps.</div>
+      <h3>Core KPI Table</h3>
+      <table>
+        <tr><th>Metric</th><th>Value</th><th>Unit</th><th>Source</th><th>Notes</th></tr>
+        <tr><td>Scope 1 emissions</td><td>Not available</td><td>tCO2e</td><td>—</td><td>Requires fuel consumption records</td></tr>
+        <tr><td>Scope 2 emissions</td><td>[__]</td><td>tCO2e</td><td>[Utility bills]</td><td>Calculated using [method]</td></tr>
+        <tr><td>TRIR / safety incidents</td><td>[__]</td><td>rate</td><td>[H&S log]</td><td>Definition: [__]</td></tr>
+      </table>
+      <h3>Targets</h3>
+      <ul class="muted">
+        <li>[Target 1 — baseline, year, owner]</li>
+        <li>[Target 2 — baseline, year, owner]</li>
+      </ul>
+      <h3>Limitations</h3>
+      <ul class="muted"><li>[Missing Scope 3 data, etc.]</li></ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- FRAMEWORK -->
+    <div class="card" id="framework">
+      <h2>Framework Mapping</h2>
+      <div class="muted">Map disclosures to requested frameworks. This section is a scaffold; fill in based on generated sections + evidence.</div>
+      <table>
+        <tr><th>Framework</th><th>Disclosure</th><th>Where addressed</th><th>Status</th></tr>
+        <tr><td>IFRS S1</td><td>Governance Oversight</td><td>Governance</td><td>Drafted / Needs evidence</td></tr>
+        <tr><td>IFRS S2</td><td>GHG emissions</td><td>Metrics & Targets</td><td>Partial / Missing data</td></tr>
+        <tr><td>TCFD</td><td>Risk identification</td><td>Risk Management</td><td>Drafted</td></tr>
+      </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- PLAN -->
+    <div class="card" id="plan">
+      <h2>30/60/90-Day Improvement Plan</h2>
+      <table>
+        <tr><th>Horizon</th><th>Actions</th><th>Owner</th><th>Evidence / Output</th></tr>
+        <tr><td>30 days</td><td>[Appoint ESG owner; define governance cadence; start evidence register]</td><td>[Name]</td><td>[Charter + tracker]</td></tr>
+        <tr><td>60 days</td><td>[Build emissions inventory; supplier code; H&S KPIs]</td><td>[Name]</td><td>[Inventory sheet; policy draft]</td></tr>
+        <tr><td>90 days</td><td>[Publish first external-ready report + client questionnaire mapping]</td><td>[Name]</td><td>[Final PDF + appendix]</td></tr>
+      </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- APPENDIX -->
+    <div class="card" id="appendix">
+      <h2>Appendices</h2>
+      <h3>Glossary</h3>
+      <div class="muted">[Define ESG terms, metrics definitions, and acronyms.]</div>
+
+      <h3>Questionnaire Mapping (if applicable)</h3>
+      <table>
+        <tr><th>Client Question</th><th>Answer source</th><th>Evidence</th></tr>
+        <tr><td>[Question]</td><td>[Section reference]</td><td>[Document]</td></tr>
+      </table>
+
+      <h3>Limitations Summary</h3>
+      <ul class="muted">
+        <li>[Missing Scope 1 records]</li>
+        <li>[No supplier audit data]</li>
+        <li>[No scenario analysis]</li>
+      </ul>
+    </div>
+
+  </div>
+</body>
+</html>
